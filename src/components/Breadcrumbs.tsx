@@ -13,7 +13,7 @@ export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ breadcrumbs, onNavigat
       {breadcrumbs.map((item, index) => {
         const isLast = index === breadcrumbs.length - 1;
         return (
-          <React.Fragment key={item.id + index}>
+          <React.Fragment key={item.gridId + index}>
             <button
               onClick={() => !isLast && onNavigate(index)}
               className={`flex items-center text-sm font-medium transition-colors ${

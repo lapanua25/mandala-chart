@@ -8,7 +8,10 @@ interface MandalaGridProps {
   onCellChange: (index: number, text: string) => void;
   onCenterChange: (text: string) => void;
   onDrillDown: (index: number) => void;
-  pathLength: number; // to trigger animation key
+  onPromoteCell: (index: number) => void;
+  onOpenLinkMenu: (index: number) => void;
+  onUnlinkCell: (index: number) => void;
+  pathLength: number;
 }
 
 export const MandalaGrid: React.FC<MandalaGridProps> = ({ 
@@ -16,6 +19,9 @@ export const MandalaGrid: React.FC<MandalaGridProps> = ({
   onCellChange, 
   onCenterChange,
   onDrillDown,
+  onPromoteCell,
+  onOpenLinkMenu,
+  onUnlinkCell,
   pathLength
 }) => {
   return (
@@ -23,11 +29,11 @@ export const MandalaGrid: React.FC<MandalaGridProps> = ({
       <AnimatePresence mode="wait">
         <motion.div
           key={pathLength}
-          initial={{ opacity: 0, scale: 0.9 }}
+          initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 1.1 }}
-          transition={{ duration: 0.3 }}
-          className="w-full h-full grid grid-cols-3 grid-rows-3 gap-2 sm:gap-4"
+          exit={{ opacity: 0, scale: 1.05 }}
+          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }} // smooth spring-like ease
+          className="w-full h-full grid grid-cols-3 grid-rows-3 gap-2 sm:gap-4 md:gap-5"
         >
           {gridData.map((cell, index) => {
             const isCenter = index === 4;
@@ -39,6 +45,9 @@ export const MandalaGrid: React.FC<MandalaGridProps> = ({
                 isCenter={isCenter}
                 onChange={(text) => isCenter ? onCenterChange(text) : onCellChange(index, text)}
                 onDrillDown={() => onDrillDown(index)}
+                onPromote={() => onPromoteCell(index)}
+                onOpenLinkMenu={() => onOpenLinkMenu(index)}
+                onUnlink={() => onUnlinkCell(index)}
               />
             );
           })}
