@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { CellData } from '../types';
-import { ZoomIn, Edit3, MoreHorizontal, Link as LinkIcon, Unlink, ArrowUpRight } from 'lucide-react';
+import { Edit3, MoreHorizontal, Link as LinkIcon, Unlink, ArrowUpRight } from 'lucide-react';
 import { useOnClickOutside } from 'usehooks-ts';
 
 interface CellProps {
@@ -61,10 +61,15 @@ export const Cell: React.FC<CellProps> = ({
       <textarea
         ref={textareaRef}
         value={data.text}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => {
+          onChange(e.target.value);
+          e.target.style.height = 'auto';
+          e.target.style.height = e.target.scrollHeight + 'px';
+        }}
+        rows={1}
         placeholder={isCenter ? "メインテーマ" : "要素を入力"}
         className={`
-          w-full h-full resize-none bg-transparent outline-none
+          w-full resize-none bg-transparent outline-none
           text-center flex items-center justify-center font-medium tracking-wide
           overflow-hidden focus:ring-0
           ${isCenter ? 'font-bold text-gray-900 bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-indigo-800' : 'text-gray-700'}
@@ -72,8 +77,7 @@ export const Cell: React.FC<CellProps> = ({
         style={{ 
           fontSize: `${fontSize}px`,
           lineHeight: 1.3,
-          display: 'flex',
-          alignItems: 'center',
+          maxHeight: '100%',
           WebkitTextFillColor: isCenter && data.text ? 'transparent' : 'initial'
         }}
       />
@@ -89,11 +93,15 @@ export const Cell: React.FC<CellProps> = ({
             active:scale-95
             ${isLinked 
               ? 'bg-indigo-100 text-indigo-700 hover:bg-indigo-600 hover:text-white ring-1 ring-indigo-200' 
-              : 'bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white'}
+              : 'bg-white text-blue-500 hover:bg-blue-500 hover:text-white border border-blue-100'}
           `}
           title={isLinked ? "リンク先のチャートを開く" : "この要素を深堀りする"}
         >
-          <ZoomIn className={`w-5 h-5 md:w-4 md:h-4 ${isLinked ? '' : 'rotate-90'}`} />
+          {isLinked ? (
+            <LinkIcon className="w-5 h-5 md:w-4 md:h-4" />
+          ) : (
+            <ArrowUpRight className="w-5 h-5 md:w-4 md:h-4" />
+          )}
         </button>
       )}
 
