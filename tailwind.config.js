@@ -7,11 +7,22 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: "#1890ff",
-        secondary: "#f0f2f5",
-        border: "#d9d9d9",
-        textDefault: "#262626",
-        textSecondary: "#8c8c8c"
+        primary: "var(--theme-primary)",
+        primaryHover: "var(--theme-primary-hover)",
+        secondary: "var(--bg-app)",
+        border: "var(--border-color)",
+        textDefault: "var(--text-main)",
+        textSecondary: "var(--text-muted)",
+        
+        cellBg: "var(--bg-cell)",
+        cellCenterStart: "var(--center-grad-start)",
+        cellCenterEnd: "var(--center-grad-end)",
+        cellCenterBorder: "var(--center-border)",
+        cellCenterTextStart: "var(--center-text-start)",
+        cellCenterTextEnd: "var(--center-text-end)",
+        cellCenterTextSolid: "var(--center-text-solid)",
+        
+        sidebarBg: "var(--bg-sidebar)",
       },
       boxShadow: {
         'ant': '0 2px 8px rgba(0, 0, 0, 0.15)',

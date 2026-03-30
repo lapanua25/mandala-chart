@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useMandalaStore } from './hooks/useMandalaStore';
 import { Breadcrumbs } from './components/Breadcrumbs';
 import { MandalaGrid } from './components/MandalaGrid';
@@ -24,6 +24,13 @@ function App() {
   } = useMandalaStore();
 
   const [linkMenuTargetCell, setLinkMenuTargetCell] = useState<number | null>(null);
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('mandala-theme');
+    if (savedTheme) {
+      document.documentElement.setAttribute('data-theme', savedTheme === 'light' ? '' : savedTheme);
+    }
+  }, []);
 
   if (!appState || !currentGrid) {
     return <div className="flex h-screen items-center justify-center bg-secondary">Loading...</div>;
@@ -90,12 +97,12 @@ function App() {
       {linkMenuTargetCell !== null && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="px-6 py-4 border-b border-border flex items-center justify-between bg-secondary/50">
-              <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
-                <LinkIcon className="w-5 h-5 text-blue-600" />
+            <div className="px-6 py-4 border-b border-border flex items-center justify-between bg-secondary">
+              <h3 className="text-lg font-bold text-textDefault flex items-center gap-2">
+                <LinkIcon className="w-5 h-5 text-primary" />
                 紐付けるチャートを選択
               </h3>
-              <button onClick={() => setLinkMenuTargetCell(null)} className="p-1 text-gray-400 hover:text-gray-600 rounded-md">
+              <button onClick={() => setLinkMenuTargetCell(null)} className="p-1 text-textSecondary hover:text-textDefault rounded-md">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -103,7 +110,6 @@ function App() {
             <div className="p-4 max-h-[60vh] overflow-y-auto space-y-2">
               {appState.rootGridIds.map(id => {
                 const title = appState.grids[id]?.[4]?.text || "名称未設定のチャート";
-                // Prevent linking to the exact same current grid to avoid immediate infinite loops
                 const isCurrentGrid = id === activePath[activePath.length - 1];
                 
                 return (
@@ -116,12 +122,12 @@ function App() {
                     }}
                     className={`w-full text-left px-4 py-3 rounded-xl border transition-all ${
                       isCurrentGrid 
-                        ? 'opacity-50 bg-gray-50 border-gray-200 cursor-not-allowed' 
-                        : 'bg-white border-border hover:border-blue-300 hover:bg-blue-50/50 hover:shadow-sm'
+                        ? 'opacity-50 bg-secondary border-border cursor-not-allowed' 
+                        : 'bg-cellBg border-border hover:border-primary hover:bg-primary/5 hover:shadow-sm'
                     }`}
                   >
-                    <span className="font-medium text-gray-800 block truncate">{title}</span>
-                    <span className="text-xs text-gray-500 mt-0.5 block truncate">ID: {id}</span>
+                    <span className="font-medium text-textDefault block truncate">{title}</span>
+                    <span className="text-xs text-textSecondary mt-0.5 block truncate">ID: {id}</span>
                   </button>
                 );
               })}

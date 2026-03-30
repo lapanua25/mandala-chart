@@ -50,14 +50,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <aside 
         className={`
           fixed md:static inset-y-0 left-0 z-40
-          w-64 bg-white/80 backdrop-blur-md border-r border-border/50 shadow-[4px_0_24px_rgba(0,0,0,0.02)]
+          w-64 bg-sidebarBg backdrop-blur-md border-r border-border shadow-ant
           flex flex-col transition-transform duration-300 ease-in-out
           ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
         `}
       >
-        <div className="p-6 pb-4 border-b border-border/30">
-          <h1 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 flex items-center gap-2">
-            <LayoutGrid className="w-5 h-5 text-blue-600" />
+        <div className="p-6 pb-4 border-b border-border">
+          <h1 className="text-xl font-bold flex items-center gap-2 text-textDefault">
+            <LayoutGrid className="w-5 h-5 text-primary" />
             Mandala
           </h1>
         </div>
@@ -107,13 +107,34 @@ export const Sidebar: React.FC<SidebarProps> = ({
           })}
         </div>
 
-        <div className="p-4 border-t border-border/30">
+        <div className="p-4 border-t border-border flex flex-col gap-3">
+          <div className="flex items-center gap-2 mb-2 bg-secondary p-1 rounded-xl">
+            {['light', 'dark', 'sakura', 'mint'].map((themeName) => {
+              const bgClass = 
+                themeName === 'light' ? 'bg-[#f0f2f5]' :
+                themeName === 'dark' ? 'bg-[#0f172a]' :
+                themeName === 'sakura' ? 'bg-[#fdf2f8]' :
+                'bg-[#f0fdf4]';
+              return (
+                <button
+                  key={themeName}
+                  onClick={() => {
+                    document.documentElement.setAttribute('data-theme', themeName === 'light' ? '' : themeName);
+                    localStorage.setItem('mandala-theme', themeName);
+                  }}
+                  className={`w-1/4 aspect-square rounded-lg ${bgClass} border border-border shadow-sm hover:-translate-y-0.5 transition-transform`}
+                  title={themeName}
+                />
+              );
+            })}
+          </div>
+
           <button
             onClick={() => {
               onCreate();
               setIsOpen(false);
             }}
-            className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-medium transition-all shadow-md hover:shadow-lg active:scale-[0.98]"
+            className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-primary hover:bg-primaryHover text-white rounded-xl font-medium transition-all shadow-md hover:shadow-lg active:scale-[0.98]"
           >
             <Plus className="w-5 h-5" />
             新規作成

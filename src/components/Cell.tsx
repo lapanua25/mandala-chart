@@ -46,8 +46,8 @@ export const Cell: React.FC<CellProps> = ({
         aspect-square rounded-2xl transition-all duration-300
         group cursor-text outline-none
         ${isCenter 
-          ? 'bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-400/50 shadow-md z-10 scale-[1.03] hover:shadow-lg' 
-          : 'bg-white/80 backdrop-blur-md border border-border/80 shadow-[0_2px_12px_rgba(0,0,0,0.03)] hover:shadow-ant-hover hover:-translate-y-0.5 hover:border-blue-200'}
+          ? 'bg-cellCenterStart border-2 border-cellCenterBorder shadow-md z-10 scale-[1.03] hover:shadow-lg' 
+          : 'bg-cellBg backdrop-blur-md border border-border shadow-ant hover:shadow-ant-hover hover:-translate-y-0.5 hover:border-primary'}
       `}
       onClick={(e) => {
         if ((e.target as HTMLElement).closest('button')) return;
@@ -72,13 +72,15 @@ export const Cell: React.FC<CellProps> = ({
           w-full resize-none bg-transparent outline-none
           text-center flex items-center justify-center font-medium tracking-wide
           overflow-hidden focus:ring-0
-          ${isCenter ? 'font-bold text-gray-900 bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-indigo-800' : 'text-gray-700'}
+          ${isCenter ? 'font-bold bg-clip-text text-transparent opacity-100 mix-blend-normal' : 'text-textDefault'}
         `}
         style={{ 
           fontSize: `${fontSize}px`,
           lineHeight: 1.3,
           maxHeight: '100%',
-          WebkitTextFillColor: isCenter && data.text ? 'transparent' : 'initial'
+          WebkitTextFillColor: isCenter && data.text ? 'transparent' : 'initial',
+          backgroundImage: isCenter ? 'var(--center-text-start)' : 'none',
+          backgroundColor: isCenter ? 'var(--center-text-solid)' : 'transparent',
         }}
       />
       
@@ -92,8 +94,8 @@ export const Cell: React.FC<CellProps> = ({
             opacity-100 md:opacity-0 md:group-hover:opacity-100
             active:scale-95
             ${isLinked 
-              ? 'bg-indigo-100 text-indigo-700 hover:bg-indigo-600 hover:text-white ring-1 ring-indigo-200' 
-              : 'bg-white text-blue-500 hover:bg-blue-500 hover:text-white border border-blue-100'}
+              ? 'bg-primary/10 text-primary hover:bg-primary hover:text-white ring-1 ring-primary/30' 
+              : 'bg-cellBg text-primary hover:bg-primary hover:text-white border border-primary/20'}
           `}
           title={isLinked ? "リンク先のチャートを開く" : "この要素を深堀りする"}
         >
@@ -147,7 +149,7 @@ export const Cell: React.FC<CellProps> = ({
 
       {/* Linked indicator dot on mobile / desktop */}
       {!isCenter && isLinked && (
-        <div className="absolute top-3 left-3 w-2 h-2 rounded-full bg-indigo-500 shadow-sm pointer-events-none" title="リンク先あり" />
+        <div className="absolute top-3 left-3 w-2 h-2 rounded-full bg-primary shadow-sm pointer-events-none" title="リンク先あり" />
       )}
     </div>
   );

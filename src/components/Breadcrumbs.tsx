@@ -9,7 +9,7 @@ interface BreadcrumbsProps {
 
 export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ breadcrumbs, onNavigate }) => {
   return (
-    <nav className="flex items-center space-x-2 p-4 bg-white shadow-sm w-full top-0 z-10 sticky overflow-x-auto whitespace-nowrap">
+    <nav className="flex items-center space-x-2 p-4 pl-16 md:pl-4 bg-white shadow-sm w-full top-0 z-10 sticky overflow-x-auto whitespace-nowrap min-h-[56px]">
       {breadcrumbs.map((item, index) => {
         const isLast = index === breadcrumbs.length - 1;
         return (
