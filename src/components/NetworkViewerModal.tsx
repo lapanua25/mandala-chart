@@ -16,11 +16,29 @@ export const NetworkViewerModal: React.FC<NetworkViewerModalProps> = ({ appState
   const fgRef = useRef<any>(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
   const [isCapturing, setIsCapturing] = useState(false);
+  
+  // Theme colors dynamically loaded from CSS variables
+  const [themeColors, setThemeColors] = useState({
+    bgApp: '#f0f2f5',
+    primary: '#1890ff',
+    centerText: '#1d4ed8',
+    textMain: '#262626',
+    textMuted: '#8c8c8c'
+  });
 
   const graphData = useMemo(() => generateGraphData(appState, rootGridId), [appState, rootGridId]);
 
-  // Handle Resize
+  // Read Theme Colors and Handle Resize
   useEffect(() => {
+    const style = getComputedStyle(document.documentElement);
+    setThemeColors({
+      bgApp: style.getPropertyValue('--bg-app').trim() || '#f0f2f5',
+      primary: style.getPropertyValue('--theme-primary').trim() || '#1890ff',
+      centerText: style.getPropertyValue('--center-text-start').trim() || '#1d4ed8',
+      textMain: style.getPropertyValue('--text-main').trim() || '#262626',
+      textMuted: style.getPropertyValue('--text-muted').trim() || '#8c8c8c',
+    });
+
     const updateDimensions = () => {
       if (containerRef.current) {
         setDimensions({
@@ -47,13 +65,11 @@ export const NetworkViewerModal: React.FC<NetworkViewerModalProps> = ({ appState
     if (!containerRef.current) return;
     try {
       setIsCapturing(true);
+      await new Promise(res => setTimeout(res, 100)); // wait for UI clear
       
-      // Wait a moment for any UI states to clear if necessary
-      await new Promise(res => setTimeout(res, 100));
-
       const dataUrl = await toPng(containerRef.current, { 
         cacheBust: true,
-        backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--bg-app').trim() || '#f0f2f5'
+        backgroundColor: themeColors.bgApp
       });
       
       const link = document.createElement('a');
@@ -68,7 +84,7 @@ export const NetworkViewerModal: React.FC<NetworkViewerModalProps> = ({ appState
     }
   };
 
-  // Node drawing with text
+  // Node drawing with text matching the current theme
   const drawNode = (node: any, ctx: CanvasRenderingContext2D, globalScale: number) => {
     const label = node.name;
     const fontSize = node.val === 5 ? 16/globalScale : (node.val >= 2 ? 12/globalScale : 10/globalScale);
@@ -80,27 +96,25 @@ export const NetworkViewerModal: React.FC<NetworkViewerModalProps> = ({ appState
     ctx.beginPath();
     ctx.arc(node.x, node.y, size, 0, 2 * Math.PI, false);
     
-    // Try to parse the CSS variable or fallback. Since canvas can't use var() directly sometimes,
-    // we use a trick or map it. The graph data uses 'var(--theme...)', which canvas won't understand.
-    // Let's manually map it based on val for now for simplicity.
-    if (node.val === 5) ctx.fillStyle = '#ec4899'; // root pink
-    else if (node.val >= 2) ctx.fillStyle = '#3b82f6'; // sub blue
-    else ctx.fillStyle = '#94a3b8'; // leaf gray
+    if (node.val === 5) ctx.fillStyle = themeColors.primary;
+    else if (node.val >= 2) ctx.fillStyle = themeColors.centerText;
+    else ctx.fillStyle = themeColors.textMuted;
     ctx.fill();
 
     // Draw text label
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     
-    // Slight shadow for readability
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-    ctx.shadowColor = "white";
-    ctx.shadowBlur = 4;
+    // Theme-aware shadow for readability (works on dark mode too)
+    ctx.fillStyle = themeColors.bgApp;
+    ctx.shadowColor = themeColors.bgApp;
+    ctx.shadowBlur = Math.max(4, 10/globalScale); // Scale shadow with zoom
     ctx.fillText(label, node.x, node.y + size + fontSize);
+    ctx.fillText(label, node.x, node.y + size + fontSize); // draw twice for stronger shadow
     
-    // Text outline
+    // Text core
     ctx.shadowBlur = 0;
-    ctx.fillStyle = node.val >= 2 ? '#1e293b' : '#475569';
+    ctx.fillStyle = node.val >= 2 ? themeColors.textMain : themeColors.textMuted;
     ctx.fillText(label, node.x, node.y + size + fontSize);
   };
 
@@ -143,9 +157,10 @@ export const NetworkViewerModal: React.FC<NetworkViewerModalProps> = ({ appState
             ref={fgRef}
             width={dimensions.width}
             height={dimensions.height}
+            backgroundColor={themeColors.bgApp}
             graphData={graphData}
             nodeCanvasObject={drawNode}
-            linkColor={() => 'rgba(156, 163, 175, 0.4)'} // gray border style
+            linkColor={() => themeColors.textMuted}
             linkWidth={1.5}
             // Add a little repulsive force so things spread nicely
             d3VelocityDecay={0.4}
