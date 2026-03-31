@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { AppState } from '../types';
-import { Plus, Trash2, Menu, X, LayoutGrid } from 'lucide-react';
+import { Plus, Trash2, Menu, X, LayoutGrid, Download, Upload } from 'lucide-react';
 
 interface SidebarProps {
   appState: AppState;
@@ -128,6 +128,58 @@ export const Sidebar: React.FC<SidebarProps> = ({
               );
             })}
           </div>
+
+          <div className="flex flex-col gap-2 mt-4">
+            <button
+              onClick={() => {
+                const dataStr = JSON.stringify(appState, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.download = `mandala-backup-${new Date().toISOString().split('T')[0]}.json`;
+                link.href = url;
+                link.click();
+              }}
+              className="w-full flex items-center justify-center gap-2 py-2 px-4 bg-secondary text-textSecondary hover:text-textDefault hover:bg-border/50 rounded-xl font-medium transition-all text-sm"
+              title="データを保存（書き出し）"
+            >
+              <Download className="w-4 h-4" />
+              バックアップを保存
+            </button>
+
+            <label className="w-full flex items-center justify-center gap-2 py-2 px-4 bg-secondary text-textSecondary hover:text-textDefault hover:bg-border/50 rounded-xl font-medium transition-all cursor-pointer text-sm" title="データを読み込む">
+              <Upload className="w-4 h-4" />
+              データを読み込む
+              <input 
+                type="file" 
+                accept=".json" 
+                className="hidden" 
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  const reader = new FileReader();
+                  reader.onload = (ev) => {
+                    try {
+                      const data = JSON.parse(ev.target?.result as string);
+                      if (data && data.grids && data.rootGridIds) {
+                        if (window.confirm('現在のデータは上書きされます。よろしいですか？')) {
+                          localStorage.setItem('mandala-data', JSON.stringify(data));
+                          window.location.reload();
+                        }
+                      } else {
+                        alert('無効なデータファイルです。');
+                      }
+                    } catch (err) {
+                      alert('ファイルの読み込みに失敗しました。');
+                    }
+                  };
+                  reader.readAsText(file);
+                }} 
+              />
+            </label>
+          </div>
+
+          <div className="w-full h-px bg-border my-2 max-w-[80%] mx-auto" />
 
           <button
             onClick={() => {

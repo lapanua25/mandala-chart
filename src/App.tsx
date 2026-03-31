@@ -3,6 +3,7 @@ import { useMandalaStore } from './hooks/useMandalaStore';
 import { Breadcrumbs } from './components/Breadcrumbs';
 import { MandalaGrid } from './components/MandalaGrid';
 import { Sidebar } from './components/Sidebar';
+import { NetworkViewerModal } from './components/NetworkViewerModal';
 import { X, Link as LinkIcon } from 'lucide-react';
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
   } = useMandalaStore();
 
   const [linkMenuTargetCell, setLinkMenuTargetCell] = useState<number | null>(null);
+  const [isNetworkModalOpen, setIsNetworkModalOpen] = useState(false);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('mandala-theme');
@@ -67,15 +69,30 @@ function App() {
         
         <main className="flex-1 overflow-y-auto flex flex-col items-center p-4 md:p-8 pt-16 md:pt-8 w-full max-w-5xl mx-auto">
           {/* Header Area */}
-          <div className="w-full text-center mb-6 md:mb-10 space-y-2">
+          <div className="w-full text-center mb-6 md:mb-10 space-y-2 relative">
             <h2 className="text-2xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-gray-800 to-gray-500 tracking-tight">
               {breadcrumbs[breadcrumbs.length - 1]?.text || '名称未設定'}
             </h2>
-            <p className="text-textSecondary text-sm font-medium">
+            <p className="text-textSecondary text-sm font-medium pr-12">
               {activePath.length <= 1 
                 ? "中央にメインテーマ、周囲に8つの構成要素を入力します。" 
                 : "周囲の要素を深堀りしてさらに具体化できます。"}
             </p>
+            
+            <button
+              onClick={() => setIsNetworkModalOpen(true)}
+              className="absolute right-0 top-1/2 -translate-y-1/2 p-2.5 bg-primary/10 text-primary hover:bg-primary hover:text-white rounded-full transition-colors hidden md:flex items-center justify-center group shadow-sm ring-1 ring-primary/20"
+              title="全体マップを見る"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-network"><rect x="16" y="16" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="9" y="2" width="6" height="6" rx="1"/><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"/><path d="M12 12V8"/></svg>
+            </button>
+            <button
+              onClick={() => setIsNetworkModalOpen(true)}
+              className="mt-3 md:hidden flex mx-auto items-center gap-2 px-4 py-2 bg-primary/10 text-primary hover:bg-primary hover:text-white rounded-full transition-colors shadow-sm ring-1 ring-primary/20 text-sm font-semibold"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-network"><rect x="16" y="16" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="9" y="2" width="6" height="6" rx="1"/><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"/><path d="M12 12V8"/></svg>
+              全体マップを見る
+            </button>
           </div>
 
           <div className="w-full max-w-[800px] flex-1 flex flex-col justify-center pb-12">
@@ -134,6 +151,14 @@ function App() {
             </div>
           </div>
         </div>
+      )}
+
+      {isNetworkModalOpen && activeRootId && (
+        <NetworkViewerModal
+          appState={appState}
+          rootGridId={activeRootId}
+          onClose={() => setIsNetworkModalOpen(false)}
+        />
       )}
     </div>
   );
