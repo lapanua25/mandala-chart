@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useMandalaStore } from './hooks/useMandalaStore';
-import { Breadcrumbs } from './components/Breadcrumbs';
-import { MandalaGrid } from './components/MandalaGrid';
 import { Sidebar } from './components/Sidebar';
 import { NetworkViewerModal } from './components/NetworkViewerModal';
 import { X, Link as LinkIcon } from 'lucide-react';
-
+import { generateAISuggestions } from './utils/aiUtils';
+import { Breadcrumbs } from './components/Breadcrumbs';
+import { MandalaGrid } from './components/MandalaGrid';
 function App() {
   const {
     appState,
@@ -26,6 +26,7 @@ function App() {
 
   const [linkMenuTargetCell, setLinkMenuTargetCell] = useState<number | null>(null);
   const [isNetworkModalOpen, setIsNetworkModalOpen] = useState(false);
+  const [isGeneratingAI, setIsGeneratingAI] = useState(false);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('mandala-theme');
@@ -33,6 +34,41 @@ function App() {
       document.documentElement.setAttribute('data-theme', savedTheme === 'light' ? '' : savedTheme);
     }
   }, []);
+
+  const handleMagicSuggest = async () => {
+    const currentGridId = activePath[activePath.length - 1];
+    if (!currentGrid || !currentGridId) return;
+    const centerText = currentGrid[4].text;
+    if (!centerText) return;
+
+    const apiKey = localStorage.getItem('mandala-gemini-key');
+    if (!apiKey) {
+      alert('AI機能を利用するには、サイドバー（左上メニュー）からGemini API Keyを設定してください。');
+      return;
+    }
+
+    try {
+      setIsGeneratingAI(true);
+      const suggestions = await generateAISuggestions(apiKey, centerText);
+      
+      // Update the 8 surrounding cells with the new suggestions
+      let suggestionIdx = 0;
+      for (let i = 0; i < 9; i++) {
+        if (i === 4) continue; // skip center
+        // Only overwrite empty cells or cells that were just simple placeholders
+        if (!currentGrid[i].text || currentGrid[i].text === '') {
+          if (suggestions[suggestionIdx]) {
+            updateCell(activePath[activePath.length - 1], i, suggestions[suggestionIdx]);
+          }
+        }
+        suggestionIdx++;
+      }
+    } catch (err: any) {
+      alert(`AI提案の取得に失敗しました: ${err.message}`);
+    } finally {
+      setIsGeneratingAI(false);
+    }
+  };
 
   if (!appState || !currentGrid) {
     return <div className="flex h-screen items-center justify-center bg-secondary">Loading...</div>;
@@ -105,6 +141,8 @@ function App() {
               onOpenLinkMenu={(index) => setLinkMenuTargetCell(index)}
               onUnlinkCell={unlinkGridFromCell}
               pathLength={activePath.length}
+              onMagicSuggest={handleMagicSuggest}
+              isGenerating={isGeneratingAI}
             />
           </div>
         </main>

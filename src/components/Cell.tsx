@@ -12,10 +12,12 @@ interface CellProps {
   onPromote?: () => void;
   onOpenLinkMenu?: () => void;
   onUnlink?: () => void;
+  onMagicSuggest?: () => void;
+  isGenerating?: boolean;
 }
 
 export const Cell: React.FC<CellProps> = ({ 
-  data, isCenter, onChange, onDrillDown, onPromote, onOpenLinkMenu, onUnlink 
+  data, isCenter, onChange, onDrillDown, onPromote, onOpenLinkMenu, onUnlink, onMagicSuggest, isGenerating 
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -46,16 +48,16 @@ export const Cell: React.FC<CellProps> = ({
         aspect-square rounded-2xl transition-all duration-300
         group cursor-text outline-none
         ${isCenter 
-          ? 'bg-cellCenterStart border-2 border-cellCenterBorder shadow-md z-10 scale-[1.03] hover:shadow-lg' 
-          : 'bg-cellBg backdrop-blur-md border border-border shadow-ant hover:shadow-ant-hover hover:-translate-y-0.5 hover:border-primary'}
+          ? `bg-cellCenterStart border-2 border-cellCenterBorder shadow-md scale-[1.03] hover:shadow-lg ${isMenuOpen ? 'z-50' : 'z-10'}` 
+          : `bg-cellBg backdrop-blur-md border border-border shadow-ant hover:shadow-ant-hover hover:-translate-y-0.5 hover:border-primary ${isMenuOpen ? 'z-50' : 'z-0'}`}
       `}
       onClick={(e) => {
         if ((e.target as HTMLElement).closest('button')) return;
         textareaRef.current?.focus();
       }}
     >
-      <div className="absolute top-2 right-2 text-border group-hover:text-blue-400/50 transition-colors pointer-events-none">
-        {isCenter ? <Edit3 className="w-4 h-4" /> : null}
+      <div className="absolute top-2 right-2 text-border group-hover:text-primary transition-colors pointer-events-none">
+        {isCenter && !isGenerating ? <Edit3 className="w-4 h-4" /> : null}
       </div>
 
       <textarea
@@ -71,18 +73,37 @@ export const Cell: React.FC<CellProps> = ({
         className={`
           w-full resize-none bg-transparent outline-none
           text-center flex items-center justify-center font-medium tracking-wide
-          overflow-hidden focus:ring-0
+          overflow-hidden focus:ring-0 break-keep whitespace-pre-wrap
           ${isCenter ? 'font-bold bg-clip-text text-transparent opacity-100 mix-blend-normal' : 'text-textDefault'}
+          ${isGenerating ? 'animate-pulse opacity-50' : ''}
         `}
         style={{ 
           fontSize: `${fontSize}px`,
           lineHeight: 1.3,
           maxHeight: '100%',
+          wordBreak: 'auto-phrase',
+          wordWrap: 'break-word',
           WebkitTextFillColor: isCenter && data.text ? 'transparent' : 'initial',
           backgroundImage: isCenter ? 'var(--center-text-start)' : 'none',
           backgroundColor: isCenter ? 'var(--center-text-solid)' : 'transparent',
         }}
       />
+      
+      {/* Magic Suggest AI Button */}
+      {isCenter && data.text && onMagicSuggest && (
+        <button
+          onClick={(e) => { e.stopPropagation(); onMagicSuggest(); }}
+          disabled={isGenerating}
+          className={`
+            absolute bottom-2 right-2 p-1.5 md:p-2 
+            rounded-full transition-all duration-300 shadow-sm z-20
+            ${isGenerating ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-purple-500 to-indigo-500 text-white hover:shadow-lg hover:scale-110 active:scale-95'}
+          `}
+          title="AIに周りのマスを考えてもらう✨"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-sparkles"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></svg>
+        </button>
+      )}
       
       {/* Drill down button */}
       {!isCenter && onDrillDown && (
