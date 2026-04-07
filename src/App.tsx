@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useMandalaStore } from './hooks/useMandalaStore';
 import { Sidebar } from './components/Sidebar';
 import { NetworkViewerModal } from './components/NetworkViewerModal';
-import { X, Link as LinkIcon } from 'lucide-react';
+import { X, Link as LinkIcon, LayoutGrid } from 'lucide-react';
 import { generateAISuggestions } from './utils/aiUtils';
 import { Breadcrumbs } from './components/Breadcrumbs';
 import { MandalaGrid } from './components/MandalaGrid';
@@ -28,6 +28,7 @@ function App() {
   const [linkMenuTargetCell, setLinkMenuTargetCell] = useState<number | null>(null);
   const [isNetworkModalOpen, setIsNetworkModalOpen] = useState(false);
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
+  const [isHowToUseOpen, setIsHowToUseOpen] = useState(false);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('mandala-theme');
@@ -156,7 +157,7 @@ function App() {
 
           <footer className="w-full py-12 text-center space-y-4">
              <div className="flex justify-center gap-6 text-sm text-textSecondary font-medium">
-               <a href="#" className="hover:text-primary transition-colors">How to Use</a>
+               <button onClick={() => setIsHowToUseOpen(true)} className="hover:text-primary transition-colors cursor-pointer">How to Use</button>
                <a href="#" className="hover:text-primary transition-colors">Privacy Policy</a>
                <a href="#" className="hover:text-primary transition-colors">Terms of Service</a>
              </div>
@@ -167,11 +168,75 @@ function App() {
         </main>
       </div>
 
+      {/* How to Use Modal */}
+      {isHowToUseOpen && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-300">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col relative">
+            <button 
+              onClick={() => setIsHowToUseOpen(false)}
+              className="absolute top-4 right-4 p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-all z-10"
+            >
+              <X className="w-6 h-6" />
+            </button>
+            <div className="p-8 overflow-y-auto">
+              <h2 className="text-3xl font-extrabold text-gray-900 mb-6 flex items-center gap-3">
+                <LayoutGrid className="w-8 h-8 text-primary" />
+                How to Use
+              </h2>
+              <div className="space-y-8 text-gray-600 leading-relaxed">
+                <section>
+                  <h3 className="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-sm">1</div>
+                    マンダラチャートを作成する
+                  </h3>
+                  <p>
+                    中央のマスに「メインテーマ」を入力します。その周りの8マスに、テーマに関連する「要素」や「目標」を書き込んでいきましょう。
+                  </p>
+                </section>
+                <section>
+                  <h3 className="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-sm">2</div>
+                    さらに深く掘り下げる
+                  </h3>
+                  <p>
+                    各マスの右下にある矢印ボタンをクリックすると、その要素を新しいチャートの「中心」として深掘りできます。パンくずリストを使って、いつでも元の階層に戻れます。
+                  </p>
+                </section>
+                <section>
+                  <h3 className="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-sm">3</div>
+                    AIにアイデアを提案してもらう ✨
+                  </h3>
+                  <p>
+                    Gemini AIを使って、自動でアイデアを生成できます。サイドバーから「API Key」を設定すると、中央マスの右下に ✨ ボタンが表示されます。
+                  </p>
+                </section>
+                <section>
+                  <h3 className="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-sm">4</div>
+                    全体像を可視化・保存する
+                  </h3>
+                  <p>
+                    画面上部の「全体マップ」から、チャートの繋がりをハプロタイプネットワーク風に表示できます。画像として保存して、振り返りや共有に活用しましょう。
+                  </p>
+                </section>
+              </div>
+              <button 
+                onClick={() => setIsHowToUseOpen(false)}
+                className="w-full mt-8 py-3 bg-primary text-white font-bold rounded-2xl hover:bg-primaryHover transition-all shadow-lg active:scale-[0.98]"
+              >
+                分かった！
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Link Selection Modal */}
       {linkMenuTargetCell !== null && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="px-6 py-4 border-b border-border flex items-center justify-between bg-secondary">
+            <div className="px-6 py-4 border-b border-border flex items-center justify-between bg-white text-gray-900">
               <h3 className="text-lg font-bold text-textDefault flex items-center gap-2">
                 <LinkIcon className="w-5 h-5 text-primary" />
                 紐付けるチャートを選択
@@ -181,7 +246,7 @@ function App() {
               </button>
             </div>
             
-            <div className="p-4 max-h-[60vh] overflow-y-auto space-y-2">
+            <div className="p-4 max-h-[60vh] overflow-y-auto space-y-2 bg-gray-50">
               {appState.rootGridIds.map(id => {
                 const title = appState.grids[id]?.[4]?.text || "名称未設定のチャート";
                 const isCurrentGrid = id === activePath[activePath.length - 1];
@@ -196,12 +261,12 @@ function App() {
                     }}
                     className={`w-full text-left px-4 py-3 rounded-xl border transition-all ${
                       isCurrentGrid 
-                        ? 'opacity-50 bg-secondary border-border cursor-not-allowed' 
-                        : 'bg-cellBg border-border hover:border-primary hover:bg-primary/5 hover:shadow-sm'
+                        ? 'opacity-50 bg-gray-100 border-gray-200 cursor-not-allowed text-gray-400' 
+                        : 'bg-white border-gray-200 hover:border-primary hover:text-primary hover:bg-primary/5 hover:shadow-sm text-gray-700'
                     }`}
                   >
-                    <span className="font-medium text-textDefault block truncate">{title}</span>
-                    <span className="text-xs text-textSecondary mt-0.5 block truncate">ID: {id}</span>
+                    <span className="font-medium block truncate">{title}</span>
+                    <span className="text-[10px] opacity-60 mt-0.5 block truncate italic">ID: {id}</span>
                   </button>
                 );
               })}

@@ -133,12 +133,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <div className="p-3 bg-primary/5 rounded-xl border border-primary/20 mb-2">
               <label className="text-xs font-bold text-primary flex items-center gap-1 mb-1.5">
                 <Sparkles className="w-3 h-3" />
-                Gemini API Key (AI機能用)
+                Gemini AI 設定
               </label>
+              <p className="text-[10px] text-textSecondary mb-2 leading-tight">
+                AI提案機能に必要です。Google AI Studioでキーを**無料で**取得して貼り付けてください。
+              </p>
               <input
                 type="password"
                 placeholder="AIキーを入力してEnter"
-                className="w-full text-xs p-2 rounded-lg border border-border bg-white text-textDefault"
+                className="w-full text-xs p-2 rounded-lg border border-border bg-white text-textDefault focus:ring-1 focus:ring-primary outline-none"
                 defaultValue={localStorage.getItem('mandala-gemini-key') || ''}
                 onBlur={(e) => {
                   localStorage.setItem('mandala-gemini-key', e.target.value.trim());
@@ -151,7 +154,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   }
                 }}
               />
-              <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-[10px] text-textSecondary hover:underline mt-1 block">キーを無料取得する</a>
+              <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-[10px] text-primary hover:underline mt-1.5 block font-semibold flex items-center gap-1">
+                👉 キーを無料で取得する
+              </a>
             </div>
 
             <button
