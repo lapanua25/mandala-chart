@@ -6,6 +6,7 @@ import { X, Link as LinkIcon } from 'lucide-react';
 import { generateAISuggestions } from './utils/aiUtils';
 import { Breadcrumbs } from './components/Breadcrumbs';
 import { MandalaGrid } from './components/MandalaGrid';
+import { AdSense } from './components/AdSense';
 function App() {
   const {
     appState,
@@ -131,7 +132,7 @@ function App() {
             </button>
           </div>
 
-          <div className="w-full max-w-[800px] flex-1 flex flex-col justify-center pb-12">
+          <div className="w-full max-w-[800px] flex-1 flex flex-col justify-center pb-8 border-b border-border/10">
             <MandalaGrid
               gridData={currentGrid}
               onCellChange={(index, text) => updateCell(activePath[activePath.length - 1], index, text)}
@@ -144,7 +145,25 @@ function App() {
               onMagicSuggest={handleMagicSuggest}
               isGenerating={isGeneratingAI}
             />
+
+            {/* AdSense Placement at the bottom of the grid */}
+            <AdSense 
+              client="ca-pub-XXXXXXXXXXXXXXXX" 
+              slot="XXXXXXXXXX" 
+              className="mt-12"
+            />
           </div>
+
+          <footer className="w-full py-12 text-center space-y-4">
+             <div className="flex justify-center gap-6 text-sm text-textSecondary font-medium">
+               <a href="#" className="hover:text-primary transition-colors">How to Use</a>
+               <a href="#" className="hover:text-primary transition-colors">Privacy Policy</a>
+               <a href="#" className="hover:text-primary transition-colors">Terms of Service</a>
+             </div>
+             <p className="text-xs text-textMuted tracking-widest uppercase">
+               © 2024 Mandala Chart • Powered by Gemini AI
+             </p>
+          </footer>
         </main>
       </div>
 
