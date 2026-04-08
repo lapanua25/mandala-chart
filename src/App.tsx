@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useMandalaStore } from './hooks/useMandalaStore';
 import { Sidebar } from './components/Sidebar';
 import { NetworkViewerModal } from './components/NetworkViewerModal';
-import { X, Link as LinkIcon, LayoutGrid } from 'lucide-react';
+import { X, Link as LinkIcon, LayoutGrid, Download, Camera } from 'lucide-react';
+import { toPng } from 'html-to-image';
 import { Breadcrumbs } from './components/Breadcrumbs';
 import { MandalaGrid } from './components/MandalaGrid';
 import { AdSense } from './components/AdSense';
@@ -30,6 +31,8 @@ function App() {
   const [isHowToUseOpen, setIsHowToUseOpen] = useState(false);
   const [isPolicyModalOpen, setIsPolicyModalOpen] = useState(false);
   const [policyType, setPolicyType] = useState<'privacy' | 'terms'>('privacy');
+  const [isDownloading, setIsDownloading] = useState(false);
+  const gridRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('mandala-theme');
@@ -37,8 +40,32 @@ function App() {
       document.documentElement.setAttribute('data-theme', savedTheme === 'light' ? '' : savedTheme);
     }
   }, []);
-
-
+  const handleDownloadGrid = async () => {
+    if (!gridRef.current) return;
+    try {
+      setIsDownloading(true);
+      // Wait a moment for any popovers/menus to close if needed
+      await new Promise(res => setTimeout(res, 100));
+      
+      const dataUrl = await toPng(gridRef.current, {
+        cacheBust: true,
+        backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--bg-app').trim() || '#f0f2f5',
+        style: {
+          padding: '20px',
+        }
+      });
+      
+      const link = document.createElement('a');
+      link.download = `mandala-chart-${Date.now()}.png`;
+      link.href = dataUrl;
+      link.click();
+    } catch (err) {
+      console.error('Failed to export grid image', err);
+      alert('画像の保存に失敗しました。');
+    } finally {
+      setIsDownloading(false);
+    }
+  };
   if (!appState || !currentGrid) {
     return <div className="flex h-screen items-center justify-center bg-secondary">Loading...</div>;
   }
@@ -84,33 +111,56 @@ function App() {
                 : "周囲の要素を深堀りしてさらに具体化できます。"}
             </p>
             
-            <button
-              onClick={() => setIsNetworkModalOpen(true)}
-              className="absolute right-0 top-1/2 -translate-y-1/2 p-2.5 bg-primary/10 text-primary hover:bg-primary hover:text-white rounded-full transition-colors hidden md:flex items-center justify-center group shadow-sm ring-1 ring-primary/20"
-              title="全体マップを見る"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-network"><rect x="16" y="16" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="9" y="2" width="6" height="6" rx="1"/><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"/><path d="M12 12V8"/></svg>
-            </button>
-            <button
-              onClick={() => setIsNetworkModalOpen(true)}
-              className="mt-3 md:hidden flex mx-auto items-center gap-2 px-4 py-2 bg-primary/10 text-primary hover:bg-primary hover:text-white rounded-full transition-colors shadow-sm ring-1 ring-primary/20 text-sm font-semibold"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-network"><rect x="16" y="16" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="9" y="2" width="6" height="6" rx="1"/><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"/><path d="M12 12V8"/></svg>
-              全体マップを見る
-            </button>
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 flex gap-2">
+              <button
+                onClick={handleDownloadGrid}
+                disabled={isDownloading}
+                className="p-2.5 bg-white text-gray-700 hover:text-primary rounded-full transition-all hidden md:flex items-center justify-center group shadow-sm ring-1 ring-border shadow-md active:scale-95 disabled:opacity-50"
+                title="チャートを画像で保存"
+              >
+                <Download className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => setIsNetworkModalOpen(true)}
+                className="p-2.5 bg-primary/10 text-primary hover:bg-primary hover:text-white rounded-full transition-colors hidden md:flex items-center justify-center group shadow-sm ring-1 ring-primary/20"
+                title="全体マップを見る"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-network"><rect x="16" y="16" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="9" y="2" width="6" height="6" rx="1"/><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"/><path d="M12 12V8"/></svg>
+              </button>
+            </div>
+
+            <div className="mt-4 md:hidden flex justify-center gap-3">
+              <button
+                onClick={handleDownloadGrid}
+                disabled={isDownloading}
+                className="flex items-center gap-2 px-4 py-2 bg-white text-gray-700 hover:text-primary rounded-full transition-colors shadow-md ring-1 ring-border text-sm font-semibold active:scale-95 disabled:opacity-50"
+              >
+                <Camera className="w-4 h-4" />
+                画像を保存
+              </button>
+              <button
+                onClick={() => setIsNetworkModalOpen(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary hover:bg-primary hover:text-white rounded-full transition-colors shadow-sm ring-1 ring-primary/20 text-sm font-semibold"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-network"><rect x="16" y="16" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="9" y="2" width="6" height="6" rx="1"/><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"/><path d="M12 12V8"/></svg>
+                全体マップ
+              </button>
+            </div>
           </div>
 
           <div className="w-full max-w-[800px] flex-1 flex flex-col justify-center pb-8 border-b border-border/10">
-            <MandalaGrid
-              gridData={currentGrid}
-              onCellChange={(index, text) => updateCell(activePath[activePath.length - 1], index, text)}
-              onCenterChange={(text) => updateCenterCell(activePath[activePath.length - 1], text)}
-              onDrillDown={drillDown}
-              onPromoteCell={handlePromoteCell}
-              onOpenLinkMenu={(index) => setLinkMenuTargetCell(index)}
-              onUnlinkCell={unlinkGridFromCell}
-              pathLength={activePath.length}
-            />
+            <div ref={gridRef} className="p-2 sm:p-4 rounded-3xl transition-colors">
+              <MandalaGrid
+                gridData={currentGrid}
+                onCellChange={(index, text) => updateCell(activePath[activePath.length - 1], index, text)}
+                onCenterChange={(text) => updateCenterCell(activePath[activePath.length - 1], text)}
+                onDrillDown={drillDown}
+                onPromoteCell={handlePromoteCell}
+                onOpenLinkMenu={(index) => setLinkMenuTargetCell(index)}
+                onUnlinkCell={unlinkGridFromCell}
+                pathLength={activePath.length}
+              />
+            </div>
 
             {/* AdSense Placement at the bottom of the grid */}
             <AdSense 
