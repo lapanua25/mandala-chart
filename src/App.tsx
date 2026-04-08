@@ -3,7 +3,6 @@ import { useMandalaStore } from './hooks/useMandalaStore';
 import { Sidebar } from './components/Sidebar';
 import { NetworkViewerModal } from './components/NetworkViewerModal';
 import { X, Link as LinkIcon, LayoutGrid } from 'lucide-react';
-import { generateAISuggestions } from './utils/aiUtils';
 import { Breadcrumbs } from './components/Breadcrumbs';
 import { MandalaGrid } from './components/MandalaGrid';
 import { AdSense } from './components/AdSense';
@@ -28,7 +27,6 @@ function App() {
 
   const [linkMenuTargetCell, setLinkMenuTargetCell] = useState<number | null>(null);
   const [isNetworkModalOpen, setIsNetworkModalOpen] = useState(false);
-  const [isGeneratingAI, setIsGeneratingAI] = useState(false);
   const [isHowToUseOpen, setIsHowToUseOpen] = useState(false);
   const [isPolicyModalOpen, setIsPolicyModalOpen] = useState(false);
   const [policyType, setPolicyType] = useState<'privacy' | 'terms'>('privacy');
@@ -40,48 +38,6 @@ function App() {
     }
   }, []);
 
-  const handleMagicSuggest = async () => {
-    const currentGridId = activePath[activePath.length - 1];
-    if (!currentGrid || !currentGridId) return;
-    const centerText = currentGrid[4].text;
-    if (!centerText) return;
- 
-    let apiKey = localStorage.getItem('mandala-gemini-key');
-    
-    // Fallback to site-wide key if configured in .env or hardcoded
-    const sharedKey = import.meta.env.VITE_SHARED_GEMINI_KEY || "";
-    
-    if (!apiKey && sharedKey) {
-      apiKey = sharedKey;
-    }
- 
-    if (!apiKey) {
-      alert('AI機能を利用するには、サイドバー（左上メニュー）からGemini API Keyを設定してください。');
-      return;
-    }
-
-    try {
-      setIsGeneratingAI(true);
-      const suggestions = await generateAISuggestions(apiKey, centerText);
-      
-      // Update the 8 surrounding cells with the new suggestions
-      let suggestionIdx = 0;
-      for (let i = 0; i < 9; i++) {
-        if (i === 4) continue; // skip center
-        // Only overwrite empty cells or cells that were just simple placeholders
-        if (!currentGrid[i].text || currentGrid[i].text === '') {
-          if (suggestions[suggestionIdx]) {
-            updateCell(activePath[activePath.length - 1], i, suggestions[suggestionIdx]);
-          }
-        }
-        suggestionIdx++;
-      }
-    } catch (err: any) {
-      alert(`AI提案の取得に失敗しました: ${err.message}`);
-    } finally {
-      setIsGeneratingAI(false);
-    }
-  };
 
   if (!appState || !currentGrid) {
     return <div className="flex h-screen items-center justify-center bg-secondary">Loading...</div>;
@@ -154,8 +110,6 @@ function App() {
               onOpenLinkMenu={(index) => setLinkMenuTargetCell(index)}
               onUnlinkCell={unlinkGridFromCell}
               pathLength={activePath.length}
-              onMagicSuggest={handleMagicSuggest}
-              isGenerating={isGeneratingAI}
             />
 
             {/* AdSense Placement at the bottom of the grid */}
@@ -213,18 +167,10 @@ function App() {
                     各マスの右下にある矢印ボタンをクリックすると、その要素を新しいチャートの「中心」として深掘りできます。パンくずリストを使って、いつでも元の階層に戻れます。
                   </p>
                 </section>
+
                 <section>
                   <h3 className="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">
                     <div className="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-sm">3</div>
-                    AIにアイデアを提案してもらう ✨
-                  </h3>
-                  <p>
-                    Gemini AIを使って、自動でアイデアを生成できます。サイドバーから「API Key」を設定すると、中央マスの右下に ✨ ボタンが表示されます。
-                  </p>
-                </section>
-                <section>
-                  <h3 className="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">
-                    <div className="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-sm">4</div>
                     全体像を可視化・保存する
                   </h3>
                   <p>

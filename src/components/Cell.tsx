@@ -12,12 +12,10 @@ interface CellProps {
   onPromote?: () => void;
   onOpenLinkMenu?: () => void;
   onUnlink?: () => void;
-  onMagicSuggest?: () => void;
-  isGenerating?: boolean;
 }
 
 export const Cell: React.FC<CellProps> = ({ 
-  data, isCenter, onChange, onDrillDown, onPromote, onOpenLinkMenu, onUnlink, onMagicSuggest, isGenerating 
+  data, isCenter, onChange, onDrillDown, onPromote, onOpenLinkMenu, onUnlink 
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -57,7 +55,7 @@ export const Cell: React.FC<CellProps> = ({
       }}
     >
       <div className="absolute top-2 right-2 text-border group-hover:text-primary transition-colors pointer-events-none">
-        {isCenter && !isGenerating ? <Edit3 className="w-4 h-4" /> : null}
+        {isCenter ? <Edit3 className="w-4 h-4" /> : null}
       </div>
 
       <textarea
@@ -75,7 +73,6 @@ export const Cell: React.FC<CellProps> = ({
           text-center font-medium tracking-wide
           overflow-hidden focus:ring-0 whitespace-pre-wrap
           ${isCenter ? 'font-bold bg-clip-text text-transparent opacity-100 mix-blend-normal py-1' : 'text-textDefault py-0.5'}
-          ${isGenerating ? 'animate-pulse opacity-50' : ''}
         `}
         style={{ 
           fontSize: `${fontSize}px`,
@@ -93,21 +90,6 @@ export const Cell: React.FC<CellProps> = ({
         }}
       />
       
-      {/* Magic Suggest AI Button */}
-      {isCenter && data.text && onMagicSuggest && (
-        <button
-          onClick={(e) => { e.stopPropagation(); onMagicSuggest(); }}
-          disabled={isGenerating}
-          className={`
-            absolute bottom-2 right-2 p-1.5 md:p-2 
-            rounded-full transition-all duration-300 shadow-sm z-20
-            ${isGenerating ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-purple-500 to-indigo-500 text-white hover:shadow-lg hover:scale-110 active:scale-95'}
-          `}
-          title="AIに周りのマスを考えてもらう✨"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-sparkles"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></svg>
-        </button>
-      )}
       
       {/* Drill down button */}
       {!isCenter && onDrillDown && (

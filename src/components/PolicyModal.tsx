@@ -25,10 +25,7 @@ export const PolicyModal: React.FC<PolicyModalProps> = ({ isOpen, onClose, type 
             <h4 className="font-bold text-gray-800">2. Google AdSenseの使用</h4>
             <p>本サービスでは、Googleによる広告サービス「Google AdSense」を利用しています。広告配信事業者は、ユーザーの興味に応じた広告を表示するためにCookieを使用することがあります。</p>
           </section>
-          <section>
-            <h4 className="font-bold text-gray-800">3. AI機能について</h4>
-            <p>AI提案機能を利用する際、入力されたテキストはGoogleのGemini APIに送信されます。送信されたデータの取り扱いはGoogleのプライバシーポリシーに従います。</p>
-          </section>
+
         </div>
       )
     },
@@ -40,7 +37,7 @@ export const PolicyModal: React.FC<PolicyModalProps> = ({ isOpen, onClose, type 
           <p>本サービスの利用にあたり、以下の規約に同意したものとみなします。</p>
           <section>
             <h4 className="font-bold text-gray-800">1. 免責事項</h4>
-            <p>本サービスを利用したことによって生じた不利益や損害について、開発者は一切の責任を負いません。AIによる回答の正確性についても保証いたしかねます。</p>
+            <p>本サービスを利用したことによって生じた不利益や損害について、開発者は一切の責任を負いません。</p>
           </section>
           <section>
             <h4 className="font-bold text-gray-800">2. 禁止事項</h4>

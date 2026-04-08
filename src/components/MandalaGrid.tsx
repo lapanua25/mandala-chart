@@ -12,8 +12,6 @@ interface MandalaGridProps {
   onOpenLinkMenu: (index: number) => void;
   onUnlinkCell: (index: number) => void;
   pathLength: number;
-  onMagicSuggest?: () => void;
-  isGenerating?: boolean;
 }
 
 export const MandalaGrid: React.FC<MandalaGridProps> = ({ 
@@ -24,9 +22,7 @@ export const MandalaGrid: React.FC<MandalaGridProps> = ({
   onPromoteCell,
   onOpenLinkMenu,
   onUnlinkCell,
-  pathLength,
-  onMagicSuggest,
-  isGenerating
+  pathLength
 }) => {
   return (
     <div className="w-full max-w-2xl mx-auto aspect-square p-2 sm:p-4">
@@ -52,8 +48,6 @@ export const MandalaGrid: React.FC<MandalaGridProps> = ({
                 onPromote={() => onPromoteCell(index)}
                 onOpenLinkMenu={() => onOpenLinkMenu(index)}
                 onUnlink={() => onUnlinkCell(index)}
-                onMagicSuggest={isCenter ? onMagicSuggest : undefined}
-                isGenerating={isGenerating}
               />
             );
           })}

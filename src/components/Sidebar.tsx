@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { AppState } from '../types';
-import { Plus, Trash2, Menu, X, LayoutGrid, Download, Upload, Sparkles } from 'lucide-react';
+import { Plus, Trash2, Menu, X, LayoutGrid, Download, Upload } from 'lucide-react';
 
 interface SidebarProps {
   appState: AppState;
@@ -129,90 +129,55 @@ export const Sidebar: React.FC<SidebarProps> = ({
             })}
           </div>
 
-          <div className="flex flex-col gap-2 mt-4">
-            <div className="p-3 bg-primary/5 rounded-xl border border-primary/20 mb-2">
-              <label className="text-xs font-bold text-primary flex items-center gap-1 mb-1.5">
-                <Sparkles className="w-3 h-3" />
-                Gemini AI 設定
-              </label>
-              {import.meta.env.VITE_SHARED_GEMINI_KEY ? (
-                <p className="text-[10px] text-green-600 mb-2 leading-tight flex items-center gap-1 font-medium italic">
-                  <span>✅</span> 共有枠が利用可能です。自分のキーを使う場合は以下に入力してください。
-                </p>
-              ) : (
-                <p className="text-[10px] text-textSecondary mb-2 leading-tight">
-                  AI提案機能に必要です。Google AI Studioでキーを**無料で**取得して貼り付けてください。
-                </p>
-              )}
-              <input
-                type="password"
-                placeholder={import.meta.env.VITE_SHARED_GEMINI_KEY ? "個人用キーで上書き (任意)" : "AIキーを入力してEnter"}
-                className="w-full text-xs p-2 rounded-lg border border-border bg-white text-textDefault focus:ring-1 focus:ring-primary outline-none"
-                defaultValue={localStorage.getItem('mandala-gemini-key') || ''}
-                onBlur={(e) => {
-                  localStorage.setItem('mandala-gemini-key', e.target.value.trim());
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    localStorage.setItem('mandala-gemini-key', e.currentTarget.value.trim());
-                    e.currentTarget.blur();
-                    alert('AI設定を保存しました。');
-                  }
-                }}
-              />
-              <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-[10px] text-primary hover:underline mt-1.5 block font-semibold flex items-center gap-1">
-                👉 キーを無料で取得する
-              </a>
-            </div>
+      <div className="flex flex-col gap-2 mt-4">
+        <button
+          onClick={() => {
+            const dataStr = JSON.stringify(appState, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.download = `mandala-backup-${new Date().toISOString().split('T')[0]}.json`;
+            link.href = url;
+            link.click();
+          }}
+          className="w-full flex items-center justify-center gap-2 py-2 px-4 bg-secondary text-textSecondary hover:text-textDefault hover:bg-border/50 rounded-xl font-medium transition-all text-sm"
+          title="データを保存（書き出し）"
+        >
+          <Download className="w-4 h-4" />
+          バックアップを保存
+        </button>
 
-            <button
-              onClick={() => {
-                const dataStr = JSON.stringify(appState, null, 2);
-                const dataBlob = new Blob([dataStr], { type: 'application/json' });
-                const url = URL.createObjectURL(dataBlob);
-                const link = document.createElement('a');
-                link.download = `mandala-backup-${new Date().toISOString().split('T')[0]}.json`;
-                link.href = url;
-                link.click();
-              }}
-              className="w-full flex items-center justify-center gap-2 py-2 px-4 bg-secondary text-textSecondary hover:text-textDefault hover:bg-border/50 rounded-xl font-medium transition-all text-sm"
-              title="データを保存（書き出し）"
-            >
-              <Download className="w-4 h-4" />
-              バックアップを保存
-            </button>
-
-            <label className="w-full flex items-center justify-center gap-2 py-2 px-4 bg-secondary text-textSecondary hover:text-textDefault hover:bg-border/50 rounded-xl font-medium transition-all cursor-pointer text-sm" title="データを読み込む">
-              <Upload className="w-4 h-4" />
-              データを読み込む
-              <input 
-                type="file" 
-                accept=".json" 
-                className="hidden" 
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (!file) return;
-                  const reader = new FileReader();
-                  reader.onload = (ev) => {
-                    try {
-                      const data = JSON.parse(ev.target?.result as string);
-                      if (data && data.grids && data.rootGridIds) {
-                        if (window.confirm('現在のデータは上書きされます。よろしいですか？')) {
-                          localStorage.setItem('mandala-data', JSON.stringify(data));
-                          window.location.reload();
-                        }
-                      } else {
-                        alert('無効なデータファイルです。');
-                      }
-                    } catch (err) {
-                      alert('ファイルの読み込みに失敗しました。');
+        <label className="w-full flex items-center justify-center gap-2 py-2 px-4 bg-secondary text-textSecondary hover:text-textDefault hover:bg-border/50 rounded-xl font-medium transition-all cursor-pointer text-sm" title="データを読み込む">
+          <Upload className="w-4 h-4" />
+          データを読み込む
+          <input 
+            type="file" 
+            accept=".json" 
+            className="hidden" 
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (!file) return;
+              const reader = new FileReader();
+              reader.onload = (ev) => {
+                try {
+                  const data = JSON.parse(ev.target?.result as string);
+                  if (data && data.grids && data.rootGridIds) {
+                    if (window.confirm('現在のデータは上書きされます。よろしいですか？')) {
+                      localStorage.setItem('mandala-data', JSON.stringify(data));
+                      window.location.reload();
                     }
-                  };
-                  reader.readAsText(file);
-                }} 
-              />
-            </label>
-          </div>
+                  } else {
+                    alert('無効なデータファイルです。');
+                  }
+                } catch (err) {
+                  alert('ファイルの読み込みに失敗しました。');
+                }
+              };
+              reader.readAsText(file);
+            }} 
+          />
+        </label>
+      </div>
 
           <div className="w-full h-px bg-border my-2 max-w-[80%] mx-auto" />
 
