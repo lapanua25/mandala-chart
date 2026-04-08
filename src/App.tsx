@@ -127,7 +127,7 @@ function App() {
                <button onClick={() => { setPolicyType('terms'); setIsPolicyModalOpen(true); }} className="hover:text-primary transition-colors cursor-pointer">Terms of Service</button>
              </div>
              <p className="text-xs text-textMuted tracking-widest uppercase">
-               © 2024 Mandala Chart • Powered by Gemini AI
+               © 2024 Mandala Chart
              </p>
           </footer>
         </main>
