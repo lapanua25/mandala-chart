@@ -7,6 +7,7 @@ import { generateAISuggestions } from './utils/aiUtils';
 import { Breadcrumbs } from './components/Breadcrumbs';
 import { MandalaGrid } from './components/MandalaGrid';
 import { AdSense } from './components/AdSense';
+import { PolicyModal } from './components/PolicyModal';
 function App() {
   const {
     appState,
@@ -29,6 +30,8 @@ function App() {
   const [isNetworkModalOpen, setIsNetworkModalOpen] = useState(false);
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
   const [isHowToUseOpen, setIsHowToUseOpen] = useState(false);
+  const [isPolicyModalOpen, setIsPolicyModalOpen] = useState(false);
+  const [policyType, setPolicyType] = useState<'privacy' | 'terms'>('privacy');
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('mandala-theme');
@@ -42,8 +45,16 @@ function App() {
     if (!currentGrid || !currentGridId) return;
     const centerText = currentGrid[4].text;
     if (!centerText) return;
-
-    const apiKey = localStorage.getItem('mandala-gemini-key');
+ 
+    let apiKey = localStorage.getItem('mandala-gemini-key');
+    
+    // Fallback to site-wide key if configured in .env or hardcoded
+    const sharedKey = import.meta.env.VITE_SHARED_GEMINI_KEY || "";
+    
+    if (!apiKey && sharedKey) {
+      apiKey = sharedKey;
+    }
+ 
     if (!apiKey) {
       alert('AI機能を利用するには、サイドバー（左上メニュー）からGemini API Keyを設定してください。');
       return;
@@ -158,8 +169,8 @@ function App() {
           <footer className="w-full py-12 text-center space-y-4">
              <div className="flex justify-center gap-6 text-sm text-textSecondary font-medium">
                <button onClick={() => setIsHowToUseOpen(true)} className="hover:text-primary transition-colors cursor-pointer">How to Use</button>
-               <a href="#" className="hover:text-primary transition-colors">Privacy Policy</a>
-               <a href="#" className="hover:text-primary transition-colors">Terms of Service</a>
+               <button onClick={() => { setPolicyType('privacy'); setIsPolicyModalOpen(true); }} className="hover:text-primary transition-colors cursor-pointer">Privacy Policy</button>
+               <button onClick={() => { setPolicyType('terms'); setIsPolicyModalOpen(true); }} className="hover:text-primary transition-colors cursor-pointer">Terms of Service</button>
              </div>
              <p className="text-xs text-textMuted tracking-widest uppercase">
                © 2024 Mandala Chart • Powered by Gemini AI
@@ -282,6 +293,12 @@ function App() {
           onClose={() => setIsNetworkModalOpen(false)}
         />
       )}
+
+      <PolicyModal
+        isOpen={isPolicyModalOpen}
+        type={policyType}
+        onClose={() => setIsPolicyModalOpen(false)}
+      />
     </div>
   );
 }

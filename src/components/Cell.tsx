@@ -72,20 +72,24 @@ export const Cell: React.FC<CellProps> = ({
         placeholder={isCenter ? "メインテーマ" : "要素を入力"}
         className={`
           w-full resize-none bg-transparent outline-none
-          text-center flex items-center justify-center font-medium tracking-wide
-          overflow-hidden focus:ring-0 break-keep whitespace-pre-wrap
-          ${isCenter ? 'font-bold bg-clip-text text-transparent opacity-100 mix-blend-normal' : 'text-textDefault'}
+          text-center font-medium tracking-wide
+          overflow-hidden focus:ring-0 whitespace-pre-wrap
+          ${isCenter ? 'font-bold bg-clip-text text-transparent opacity-100 mix-blend-normal py-1' : 'text-textDefault py-0.5'}
           ${isGenerating ? 'animate-pulse opacity-50' : ''}
         `}
         style={{ 
           fontSize: `${fontSize}px`,
-          lineHeight: 1.3,
+          lineHeight: 1.25,
           maxHeight: '100%',
-          wordBreak: 'auto-phrase',
-          wordWrap: 'break-word',
+          wordBreak: 'break-all',
+          overflowWrap: 'break-word',
           WebkitTextFillColor: isCenter && data.text ? 'transparent' : 'initial',
           backgroundImage: isCenter ? 'var(--center-text-start)' : 'none',
           backgroundColor: isCenter ? 'var(--center-text-solid)' : 'transparent',
+          display: 'flex',
+          alignItems: 'center',
+          marginTop: 'auto',
+          marginBottom: 'auto'
         }}
       />
       

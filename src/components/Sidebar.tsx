@@ -135,12 +135,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <Sparkles className="w-3 h-3" />
                 Gemini AI 設定
               </label>
-              <p className="text-[10px] text-textSecondary mb-2 leading-tight">
-                AI提案機能に必要です。Google AI Studioでキーを**無料で**取得して貼り付けてください。
-              </p>
+              {import.meta.env.VITE_SHARED_GEMINI_KEY ? (
+                <p className="text-[10px] text-green-600 mb-2 leading-tight flex items-center gap-1 font-medium italic">
+                  <span>✅</span> 共有枠が利用可能です。自分のキーを使う場合は以下に入力してください。
+                </p>
+              ) : (
+                <p className="text-[10px] text-textSecondary mb-2 leading-tight">
+                  AI提案機能に必要です。Google AI Studioでキーを**無料で**取得して貼り付けてください。
+                </p>
+              )}
               <input
                 type="password"
-                placeholder="AIキーを入力してEnter"
+                placeholder={import.meta.env.VITE_SHARED_GEMINI_KEY ? "個人用キーで上書き (任意)" : "AIキーを入力してEnter"}
                 className="w-full text-xs p-2 rounded-lg border border-border bg-white text-textDefault focus:ring-1 focus:ring-primary outline-none"
                 defaultValue={localStorage.getItem('mandala-gemini-key') || ''}
                 onBlur={(e) => {
