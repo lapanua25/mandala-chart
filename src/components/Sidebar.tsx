@@ -31,8 +31,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   return (
     <>
       {/* Mobile Toggle Button */}
-      <button 
-        className="md:hidden fixed top-4 left-4 z-50 p-2 bg-white rounded-md shadow-md text-textDefault"
+      <button
+        className="md:hidden fixed top-16 left-4 z-40 p-2 bg-secondary border border-border rounded-md shadow-md text-textDefault hover:bg-border transition-colors"
         onClick={() => setIsOpen(!isOpen)}
       >
         {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -63,7 +63,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 space-y-2">
-          <h2 className="text-xs font-semibold text-textSecondary uppercase tracking-wider mb-4 ml-2">My Charts</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xs font-semibold text-textSecondary uppercase tracking-wider ml-2">My Charts</h2>
+            <button
+              onClick={() => {
+                onCreate();
+                setIsOpen(false);
+              }}
+              className="p-1.5 bg-primary hover:bg-primaryHover text-white rounded-lg transition-all shadow-sm"
+              title="新規作成"
+            >
+              <Plus className="w-4 h-4" />
+            </button>
+          </div>
           
           {appState.rootGridIds.map((id) => {
             const isActive = id === activeRootId;
@@ -108,25 +120,26 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         <div className="p-4 border-t border-border flex flex-col gap-3">
-          <div className="flex items-center gap-2 mb-2 bg-secondary p-1 rounded-xl">
-            {['light', 'dark', 'sakura', 'mint'].map((themeName) => {
-              const bgClass = 
-                themeName === 'light' ? 'bg-[#f0f2f5]' :
-                themeName === 'dark' ? 'bg-[#0f172a]' :
-                themeName === 'sakura' ? 'bg-[#fdf2f8]' :
-                'bg-[#f0fdf4]';
-              return (
+          <div className="mb-2">
+            <p className="text-xs font-semibold text-textSecondary uppercase tracking-wider mb-2">テーマ</p>
+            <div className="space-y-2">
+              {[
+                { name: 'light', bg: 'bg-[#f0f2f5]', textColor: 'text-gray-800', desc: 'Light' },
+                { name: 'dark', bg: 'bg-[#0f172a]', textColor: 'text-white', desc: 'Dark' }
+              ].map((theme) => (
                 <button
-                  key={themeName}
+                  key={theme.name}
                   onClick={() => {
-                    document.documentElement.setAttribute('data-theme', themeName === 'light' ? '' : themeName);
-                    localStorage.setItem('mandala-theme', themeName);
+                    document.documentElement.setAttribute('data-theme', theme.name === 'light' ? '' : theme.name);
+                    localStorage.setItem('mandala-theme', theme.name);
                   }}
-                  className={`w-1/4 aspect-square rounded-lg ${bgClass} border border-border shadow-sm hover:-translate-y-0.5 transition-transform`}
-                  title={themeName}
-                />
-              );
-            })}
+                  className={`w-full py-2.5 px-4 rounded-lg ${theme.bg} ${theme.textColor} border-2 border-border shadow-sm hover:-translate-y-0.5 transition-all font-semibold text-sm`}
+                  title={theme.desc}
+                >
+                  {theme.desc}
+                </button>
+              ))}
+            </div>
           </div>
 
       <div className="flex flex-col gap-2 mt-4">
@@ -178,19 +191,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
           />
         </label>
       </div>
-
-          <div className="w-full h-px bg-border my-2 max-w-[80%] mx-auto" />
-
-          <button
-            onClick={() => {
-              onCreate();
-              setIsOpen(false);
-            }}
-            className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-primary hover:bg-primaryHover text-white rounded-xl font-medium transition-all shadow-md hover:shadow-lg active:scale-[0.98]"
-          >
-            <Plus className="w-5 h-5" />
-            新規作成
-          </button>
         </div>
       </aside>
     </>

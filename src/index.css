@@ -43,47 +43,7 @@
     --center-text-solid: #f8fafc;
   }
 
-  [data-theme='sakura'] {
-    /* SAKURA (Pink) */
-    --bg-app: #fdf2f8; /* pink-50 */
-    --text-main: #831843; /* pink-900 */
-    --text-muted: #f472b6; /* pink-400 */
-    --border-color: #fbcfe8; /* pink-200 */
-    
-    --bg-sidebar: rgba(255, 255, 255, 0.85);
-    --bg-cell: rgba(255, 255, 255, 0.7);
-    
-    --theme-primary: #ec4899; /* pink-500 */
-    --theme-primary-hover: #f472b6; /* pink-400 */
-    
-    --center-grad-start: #fce7f3; /* pink-100 */
-    --center-grad-end: #fbcfe8;   /* pink-200 */
-    --center-border: rgba(244, 114, 182, 0.5); /* pink-400 */
-    --center-text-start: #be185d; /* pink-700 */
-    --center-text-end: #831843;   /* pink-900 */
-    --center-text-solid: #4c0519; /* pink-950 */
-  }
 
-  [data-theme='mint'] {
-    /* MINT (Green) */
-    --bg-app: #f0fdf4; /* green-50 */
-    --text-main: #14532d; /* green-900 */
-    --text-muted: #4ade80; /* green-400 */
-    --border-color: #bbf7d0; /* green-200 */
-    
-    --bg-sidebar: rgba(255, 255, 255, 0.85);
-    --bg-cell: rgba(255, 255, 255, 0.7);
-    
-    --theme-primary: #22c55e; /* green-500 */
-    --theme-primary-hover: #4ade80; /* green-400 */
-    
-    --center-grad-start: #dcfce7; /* green-100 */
-    --center-grad-end: #bbf7d0;   /* green-200 */
-    --center-border: rgba(74, 222, 128, 0.5); /* green-400 */
-    --center-text-start: #16a34a; /* green-600 */
-    --center-text-end: #14532d;   /* green-900 */
-    --center-text-solid: #052e16; /* green-950 */
-  }
 
   body {
     background-color: var(--bg-app);

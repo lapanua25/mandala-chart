@@ -3,8 +3,8 @@ import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
-  // GitHub Actionsでビルドする際、自動的にリポジトリ名をURLプレフィックスに設定します
-  base: process.env.GITHUB_REPOSITORY ? `/${process.env.GITHUB_REPOSITORY.split('/')[1]}/` : '/',
+  // GitHub Pagesで terra-nova-botanica サイト内の /mandala/ にホストされます
+  base: '/mandala/',
   plugins: [
     react(),
     VitePWA({

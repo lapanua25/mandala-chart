@@ -26,11 +26,12 @@ export const Cell: React.FC<CellProps> = ({
 
   useEffect(() => {
     const textLength = data.text.length;
-    if (textLength < 8) setFontSize(20);
-    else if (textLength < 25) setFontSize(16);
-    else if (textLength < 50) setFontSize(13);
-    else setFontSize(11);
-  }, [data.text]);
+    if (textLength < 6) setFontSize(isCenter ? 16 : 14);
+    else if (textLength < 12) setFontSize(isCenter ? 14 : 12);
+    else if (textLength < 25) setFontSize(isCenter ? 12 : 11);
+    else if (textLength < 50) setFontSize(isCenter ? 11 : 10);
+    else setFontSize(isCenter ? 10 : 9);
+  }, [data.text, isCenter]);
 
   const handleDrillDown = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -40,13 +41,13 @@ export const Cell: React.FC<CellProps> = ({
   const isLinked = !!data.linkedGridId;
 
   return (
-    <div 
+    <div
       className={`
-        relative flex flex-col items-center justify-center p-2 md:p-3
-        aspect-square rounded-2xl transition-all duration-300
-        group cursor-text outline-none
-        ${isCenter 
-          ? `bg-cellCenterStart border-2 border-cellCenterBorder shadow-md scale-[1.03] hover:shadow-lg ${isMenuOpen ? 'z-50' : 'z-10'}` 
+        relative flex flex-col items-center justify-center p-1 sm:p-1.5 md:p-3
+        aspect-square rounded-lg sm:rounded-xl md:rounded-2xl transition-all duration-300
+        group cursor-text outline-none overflow-hidden
+        ${isCenter
+          ? `bg-cellCenterStart border-2 border-cellCenterBorder shadow-md scale-[1.03] hover:shadow-lg ${isMenuOpen ? 'z-50' : 'z-10'}`
           : `bg-cellBg backdrop-blur-md border border-border shadow-ant hover:shadow-ant-hover hover:-translate-y-0.5 hover:border-primary ${isMenuOpen ? 'z-50' : 'z-0'}`}
       `}
       onClick={(e) => {
@@ -58,37 +59,63 @@ export const Cell: React.FC<CellProps> = ({
         {isCenter ? <Edit3 className="w-4 h-4" /> : null}
       </div>
 
-      <textarea
-        ref={textareaRef}
-        value={data.text}
-        onChange={(e) => {
-          onChange(e.target.value);
-          e.target.style.height = 'auto';
-          e.target.style.height = e.target.scrollHeight + 'px';
+      {/* Placeholder label - only show when empty and not focused */}
+      {!data.text && (
+        <div
+          className={`
+            absolute inset-0 flex items-center justify-center
+            pointer-events-none text-center font-medium tracking-wide px-2
+            ${isCenter ? 'font-bold' : 'text-textSecondary'}
+          `}
+          style={{
+            fontSize: `${fontSize}px`,
+            lineHeight: '1.4'
+          }}
+        >
+          {isCenter ? "メインテーマ" : "要素を入力"}
+        </div>
+      )}
+
+      <div
+        ref={textareaRef as any}
+        contentEditable
+        suppressContentEditableWarning
+        onInput={(e) => {
+          onChange(e.currentTarget.textContent || '');
         }}
-        rows={1}
-        placeholder={isCenter ? "メインテーマ" : "要素を入力"}
+        onBlur={(e) => {
+          // Ensure the div still displays placeholder text if empty
+          if (!e.currentTarget.textContent?.trim()) {
+            e.currentTarget.textContent = '';
+          }
+        }}
         className={`
-          w-full resize-none bg-transparent outline-none
+          w-full h-full flex flex-col items-center justify-center px-2
+          resize-none bg-transparent outline-none
           text-center font-medium tracking-wide
-          overflow-hidden focus:ring-0 whitespace-pre-wrap
-          ${isCenter ? 'font-bold bg-clip-text text-transparent opacity-100 mix-blend-normal py-1' : 'text-textDefault py-0.5'}
+          focus:ring-0 whitespace-pre-wrap break-words
+          ${isCenter ? 'font-bold bg-clip-text text-transparent opacity-100 mix-blend-normal' : 'text-textDefault'}
         `}
-        style={{ 
+        style={{
           fontSize: `${fontSize}px`,
-          lineHeight: 1.25,
-          maxHeight: '100%',
-          wordBreak: 'break-all',
+          lineHeight: '1.4',
+          wordBreak: 'break-word',
           overflowWrap: 'break-word',
+          textAlign: 'center',
           WebkitTextFillColor: isCenter && data.text ? 'transparent' : 'initial',
           backgroundImage: isCenter ? 'var(--center-text-start)' : 'none',
-          backgroundColor: isCenter ? 'var(--center-text-solid)' : 'transparent',
+          backgroundColor: 'transparent',
+          padding: '0',
+          margin: '0',
+          border: 'none',
           display: 'flex',
+          flexDirection: 'column',
           alignItems: 'center',
-          marginTop: 'auto',
-          marginBottom: 'auto'
+          justifyContent: 'center'
         }}
-      />
+      >
+        {data.text}
+      </div>
       
       
       {/* Drill down button */}
@@ -96,20 +123,20 @@ export const Cell: React.FC<CellProps> = ({
         <button
           onClick={handleDrillDown}
           className={`
-            absolute bottom-2 right-2 p-1.5 md:p-1.5 
-            rounded-full transition-all duration-300 shadow-sm z-10
+            absolute bottom-1.5 right-1.5 p-1 md:p-0.5
+            rounded-lg transition-all duration-300 shadow-sm z-10
             opacity-100 md:opacity-0 md:group-hover:opacity-100
             active:scale-95
-            ${isLinked 
-              ? 'bg-primary/10 text-primary hover:bg-primary hover:text-white ring-1 ring-primary/30' 
-              : 'bg-cellBg text-primary hover:bg-primary hover:text-white border border-primary/20'}
+            ${isLinked
+              ? 'bg-primary/10 text-primary hover:bg-primary/20 ring-1 ring-primary/30'
+              : 'bg-secondary/50 text-textSecondary hover:bg-primary hover:text-white'}
           `}
           title={isLinked ? "リンク先のチャートを開く" : "この要素を深堀りする"}
         >
           {isLinked ? (
-            <LinkIcon className="w-5 h-5 md:w-4 md:h-4" />
+            <LinkIcon className="w-3.5 h-3.5 md:w-3 md:h-3" />
           ) : (
-            <ArrowUpRight className="w-5 h-5 md:w-4 md:h-4" />
+            <ArrowUpRight className="w-3.5 h-3.5 md:w-3 md:h-3" />
           )}
         </button>
       )}

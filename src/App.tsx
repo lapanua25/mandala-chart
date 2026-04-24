@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { useMandalaStore } from './hooks/useMandalaStore';
 import { Sidebar } from './components/Sidebar';
 import { NetworkViewerModal } from './components/NetworkViewerModal';
-import { X, Link as LinkIcon, LayoutGrid, Download, Camera } from 'lucide-react';
+import { TutorialModal } from './components/TutorialModal';
+import { X, Link as LinkIcon, LayoutGrid, Download, Camera, HelpCircle } from 'lucide-react';
 import { toPng } from 'html-to-image';
 import { Breadcrumbs } from './components/Breadcrumbs';
 import { MandalaGrid } from './components/MandalaGrid';
@@ -29,6 +30,7 @@ function App() {
   const [linkMenuTargetCell, setLinkMenuTargetCell] = useState<number | null>(null);
   const [isNetworkModalOpen, setIsNetworkModalOpen] = useState(false);
   const [isHowToUseOpen, setIsHowToUseOpen] = useState(false);
+  const [isTutorialOpen, setIsTutorialOpen] = useState(false);
   const [isPolicyModalOpen, setIsPolicyModalOpen] = useState(false);
   const [policyType, setPolicyType] = useState<'privacy' | 'terms'>('privacy');
   const [isDownloading, setIsDownloading] = useState(false);
@@ -99,19 +101,26 @@ function App() {
       <div className="flex-1 flex flex-col h-full overflow-hidden relative">
         <Breadcrumbs breadcrumbs={breadcrumbs} onNavigate={gotoBreadcrumb} />
         
-        <main className="flex-1 overflow-y-auto flex flex-col items-center p-4 md:p-8 pt-16 md:pt-8 w-full max-w-5xl mx-auto">
+        <main className="flex-1 overflow-hidden flex flex-col items-center p-2 sm:p-4 md:p-8 pt-12 sm:pt-14 md:pt-8 w-full max-w-5xl mx-auto">
           {/* Header Area */}
-          <div className="w-full text-center mb-6 md:mb-10 space-y-2 relative">
-            <h2 className="text-2xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-gray-800 to-gray-500 tracking-tight">
+          <div className="w-full text-center mb-2 sm:mb-4 md:mb-6 space-y-1 sm:space-y-2 relative">
+            <h2 className="text-lg sm:text-2xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-gray-800 to-gray-500 tracking-tight line-clamp-1">
               {breadcrumbs[breadcrumbs.length - 1]?.text || '名称未設定'}
             </h2>
-            <p className="text-textSecondary text-sm font-medium pr-12">
-              {activePath.length <= 1 
-                ? "中央にメインテーマ、周囲に8つの構成要素を入力します。" 
+            <p className="text-textSecondary text-xs sm:text-sm font-medium pr-12 hidden sm:block">
+              {activePath.length <= 1
+                ? "中央にメインテーマ、周囲に8つの構成要素を入力します。"
                 : "周囲の要素を深堀りしてさらに具体化できます。"}
             </p>
             
             <div className="absolute right-0 top-1/2 -translate-y-1/2 flex gap-2">
+              <button
+                onClick={() => setIsTutorialOpen(true)}
+                className="p-2.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-full transition-all hidden md:flex items-center justify-center shadow-sm ring-1 ring-blue-200"
+                title="使い方ガイド"
+              >
+                <HelpCircle className="w-5 h-5" />
+              </button>
               <button
                 onClick={handleDownloadGrid}
                 disabled={isDownloading}
@@ -130,6 +139,13 @@ function App() {
             </div>
 
             <div className="mt-4 md:hidden flex justify-center gap-3">
+              <button
+                onClick={() => setIsTutorialOpen(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-full transition-colors shadow-sm ring-1 ring-blue-200 text-sm font-semibold"
+              >
+                <HelpCircle className="w-4 h-4" />
+                ガイド
+              </button>
               <button
                 onClick={handleDownloadGrid}
                 disabled={isDownloading}
@@ -294,6 +310,11 @@ function App() {
         isOpen={isPolicyModalOpen}
         type={policyType}
         onClose={() => setIsPolicyModalOpen(false)}
+      />
+
+      <TutorialModal
+        isOpen={isTutorialOpen}
+        onClose={() => setIsTutorialOpen(false)}
       />
     </div>
   );
