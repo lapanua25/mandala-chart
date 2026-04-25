@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { CellData } from '../types';
-import { Edit3, MoreHorizontal, Link as LinkIcon, Unlink, ArrowUpRight } from 'lucide-react';
+import { Edit3, Link as LinkIcon, ArrowUpRight } from 'lucide-react';
 import { useOnClickOutside } from 'usehooks-ts';
 
 interface CellProps {
@@ -9,13 +9,10 @@ interface CellProps {
   isCenter: boolean;
   onChange: (text: string) => void;
   onDrillDown?: () => void;
-  onPromote?: () => void;
-  onOpenLinkMenu?: () => void;
-  onUnlink?: () => void;
 }
 
-export const Cell: React.FC<CellProps> = ({ 
-  data, isCenter, onChange, onDrillDown, onPromote, onOpenLinkMenu, onUnlink 
+export const Cell: React.FC<CellProps> = ({
+  data, isCenter, onChange, onDrillDown
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -59,7 +56,8 @@ export const Cell: React.FC<CellProps> = ({
         {isCenter ? <Edit3 className="w-4 h-4" /> : null}
       </div>
 
-      {/* Placeholder label - only show when empty and not focused */}
+
+      {/* Placeholder label - only show when empty */}
       {!data.text && (
         <div
           className={`
@@ -141,45 +139,6 @@ export const Cell: React.FC<CellProps> = ({
         </button>
       )}
 
-      {/* Action Menu (Link/Promote) */}
-      {!isCenter && (
-        <div className="absolute top-2 left-2 z-20" ref={menuRef}>
-          <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="p-1 rounded-md text-textSecondary hover:text-primary hover:bg-blue-50 transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100"
-          >
-            <MoreHorizontal className="w-5 h-5 md:w-4 md:h-4" />
-          </button>
-          
-          {isMenuOpen && (
-            <div className="absolute top-full left-0 mt-1 w-48 bg-white rounded-xl shadow-[0_4px_24px_rgba(0,0,0,0.1)] border border-border/50 py-1 overflow-hidden">
-              <button 
-                className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 flex items-center gap-2"
-                onClick={() => { setIsMenuOpen(false); onPromote && onPromote(); }}
-              >
-                <ArrowUpRight className="w-4 h-4" />
-                独立したチャートにする
-              </button>
-              <button 
-                className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 flex items-center gap-2"
-                onClick={() => { setIsMenuOpen(false); onOpenLinkMenu && onOpenLinkMenu(); }}
-              >
-                <LinkIcon className="w-4 h-4" />
-                既存チャートを紐付ける
-              </button>
-              {isLinked && (
-                <button 
-                  className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
-                  onClick={() => { setIsMenuOpen(false); onUnlink && onUnlink(); }}
-                >
-                  <Unlink className="w-4 h-4" />
-                  紐付けを解除
-                </button>
-              )}
-            </div>
-          )}
-        </div>
-      )}
 
       {/* Linked indicator dot on mobile / desktop */}
       {!isCenter && isLinked && (

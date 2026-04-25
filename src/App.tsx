@@ -3,7 +3,7 @@ import { useMandalaStore } from './hooks/useMandalaStore';
 import { Sidebar } from './components/Sidebar';
 import { NetworkViewerModal } from './components/NetworkViewerModal';
 import { TutorialModal } from './components/TutorialModal';
-import { X, Link as LinkIcon, LayoutGrid, Download, Camera, HelpCircle } from 'lucide-react';
+import { X, LayoutGrid, Download, Camera, HelpCircle } from 'lucide-react';
 import { toPng } from 'html-to-image';
 import { Breadcrumbs } from './components/Breadcrumbs';
 import { MandalaGrid } from './components/MandalaGrid';
@@ -21,13 +21,9 @@ function App() {
     gotoBreadcrumb,
     createNewRootChart,
     deleteRootChart,
-    switchRootChart,
-    promoteToRoot,
-    linkGridToCell,
-    unlinkGridFromCell
+    switchRootChart
   } = useMandalaStore();
 
-  const [linkMenuTargetCell, setLinkMenuTargetCell] = useState<number | null>(null);
   const [isNetworkModalOpen, setIsNetworkModalOpen] = useState(false);
   const [isHowToUseOpen, setIsHowToUseOpen] = useState(false);
   const [isTutorialOpen, setIsTutorialOpen] = useState(false);
@@ -74,20 +70,6 @@ function App() {
 
   const activeRootId = activePath.length > 0 ? activePath[0] : null;
 
-  const handlePromoteCell = (index: number) => {
-    let targetId = currentGrid[index].linkedGridId;
-    if (!targetId) {
-      // If no grid attached yet, just drill down to create it, then promote
-      drillDown(index);
-      // Wait for state to update: Actually simpler to just not allow promotion of empty, 
-      // but drillDown creates and immediately navigates. Let's just create it directly or alert.
-      alert('先にこの要素を一度掘り下げてから「独立」させてください。');
-      return;
-    }
-    promoteToRoot(targetId);
-    alert('このチャートをサイドバーに独立させました！');
-  };
-
   return (
     <div className="flex h-screen overflow-hidden bg-secondary selection:bg-blue-100">
       <Sidebar 
@@ -101,13 +83,13 @@ function App() {
       <div className="flex-1 flex flex-col h-full overflow-hidden relative">
         <Breadcrumbs breadcrumbs={breadcrumbs} onNavigate={gotoBreadcrumb} />
         
-        <main className="flex-1 overflow-hidden flex flex-col items-center p-2 sm:p-4 md:p-8 pt-12 sm:pt-14 md:pt-8 w-full max-w-5xl mx-auto">
+        <main className="flex-1 overflow-hidden flex flex-col items-center p-1 sm:p-2 md:p-4 pt-2 sm:pt-3 md:pt-4 w-full max-w-4xl mx-auto">
           {/* Header Area */}
-          <div className="w-full text-center mb-2 sm:mb-4 md:mb-6 space-y-1 sm:space-y-2 relative">
-            <h2 className="text-lg sm:text-2xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-gray-800 to-gray-500 tracking-tight line-clamp-1">
+          <div className="w-full text-center mb-1 sm:mb-2 md:mb-3 space-y-0 sm:space-y-1 relative">
+            <h2 className="text-base sm:text-lg md:text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-gray-800 to-gray-500 tracking-tight line-clamp-1">
               {breadcrumbs[breadcrumbs.length - 1]?.text || '名称未設定'}
             </h2>
-            <p className="text-textSecondary text-xs sm:text-sm font-medium pr-12 hidden sm:block">
+            <p className="text-textSecondary text-xs font-medium pr-12 hidden sm:block">
               {activePath.length <= 1
                 ? "中央にメインテーマ、周囲に8つの構成要素を入力します。"
                 : "周囲の要素を深堀りしてさらに具体化できます。"}
@@ -164,16 +146,13 @@ function App() {
             </div>
           </div>
 
-          <div className="w-full max-w-[800px] flex-1 flex flex-col justify-center pb-8 border-b border-border/10">
-            <div ref={gridRef} className="p-2 sm:p-4 rounded-3xl transition-colors">
+          <div className="w-full max-w-[700px] flex-1 flex flex-col justify-center pb-1 sm:pb-2 border-b border-border/10">
+            <div ref={gridRef} className="p-1 sm:p-2 rounded-3xl transition-colors">
               <MandalaGrid
                 gridData={currentGrid}
                 onCellChange={(index, text) => updateCell(activePath[activePath.length - 1], index, text)}
                 onCenterChange={(text) => updateCenterCell(activePath[activePath.length - 1], text)}
                 onDrillDown={drillDown}
-                onPromoteCell={handlePromoteCell}
-                onOpenLinkMenu={(index) => setLinkMenuTargetCell(index)}
-                onUnlinkCell={unlinkGridFromCell}
                 pathLength={activePath.length}
               />
             </div>
@@ -186,13 +165,13 @@ function App() {
             />
           </div>
 
-          <footer className="w-full py-12 text-center space-y-4">
-             <div className="flex justify-center gap-6 text-sm text-textSecondary font-medium">
+          <footer className="w-full py-2 sm:py-3 text-center space-y-1">
+             <div className="flex justify-center gap-3 text-xs sm:text-sm text-textSecondary font-medium">
                <button onClick={() => setIsHowToUseOpen(true)} className="hover:text-primary transition-colors cursor-pointer">How to Use</button>
-               <button onClick={() => { setPolicyType('privacy'); setIsPolicyModalOpen(true); }} className="hover:text-primary transition-colors cursor-pointer">Privacy Policy</button>
-               <button onClick={() => { setPolicyType('terms'); setIsPolicyModalOpen(true); }} className="hover:text-primary transition-colors cursor-pointer">Terms of Service</button>
+               <button onClick={() => { setPolicyType('privacy'); setIsPolicyModalOpen(true); }} className="hover:text-primary transition-colors cursor-pointer">Privacy</button>
+               <button onClick={() => { setPolicyType('terms'); setIsPolicyModalOpen(true); }} className="hover:text-primary transition-colors cursor-pointer">Terms</button>
              </div>
-             <p className="text-xs text-textMuted tracking-widest uppercase">
+             <p className="text-[10px] sm:text-xs text-textMuted tracking-widest uppercase">
                © 2024 Mandala Chart
              </p>
           </footer>
@@ -250,49 +229,6 @@ function App() {
               >
                 分かった！
               </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Link Selection Modal */}
-      {linkMenuTargetCell !== null && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="px-6 py-4 border-b border-border flex items-center justify-between bg-white text-gray-900">
-              <h3 className="text-lg font-bold text-textDefault flex items-center gap-2">
-                <LinkIcon className="w-5 h-5 text-primary" />
-                紐付けるチャートを選択
-              </h3>
-              <button onClick={() => setLinkMenuTargetCell(null)} className="p-1 text-textSecondary hover:text-textDefault rounded-md">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            
-            <div className="p-4 max-h-[60vh] overflow-y-auto space-y-2 bg-gray-50">
-              {appState.rootGridIds.map(id => {
-                const title = appState.grids[id]?.[4]?.text || "名称未設定のチャート";
-                const isCurrentGrid = id === activePath[activePath.length - 1];
-                
-                return (
-                  <button
-                    key={id}
-                    disabled={isCurrentGrid}
-                    onClick={() => {
-                      linkGridToCell(linkMenuTargetCell, id);
-                      setLinkMenuTargetCell(null);
-                    }}
-                    className={`w-full text-left px-4 py-3 rounded-xl border transition-all ${
-                      isCurrentGrid 
-                        ? 'opacity-50 bg-gray-100 border-gray-200 cursor-not-allowed text-gray-400' 
-                        : 'bg-white border-gray-200 hover:border-primary hover:text-primary hover:bg-primary/5 hover:shadow-sm text-gray-700'
-                    }`}
-                  >
-                    <span className="font-medium block truncate">{title}</span>
-                    <span className="text-[10px] opacity-60 mt-0.5 block truncate italic">ID: {id}</span>
-                  </button>
-                );
-              })}
             </div>
           </div>
         </div>

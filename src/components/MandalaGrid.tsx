@@ -8,20 +8,14 @@ interface MandalaGridProps {
   onCellChange: (index: number, text: string) => void;
   onCenterChange: (text: string) => void;
   onDrillDown: (index: number) => void;
-  onPromoteCell: (index: number) => void;
-  onOpenLinkMenu: (index: number) => void;
-  onUnlinkCell: (index: number) => void;
   pathLength: number;
 }
 
-export const MandalaGrid: React.FC<MandalaGridProps> = ({ 
-  gridData, 
-  onCellChange, 
+export const MandalaGrid: React.FC<MandalaGridProps> = ({
+  gridData,
+  onCellChange,
   onCenterChange,
   onDrillDown,
-  onPromoteCell,
-  onOpenLinkMenu,
-  onUnlinkCell,
   pathLength
 }) => {
   return (
@@ -45,9 +39,6 @@ export const MandalaGrid: React.FC<MandalaGridProps> = ({
                 isCenter={isCenter}
                 onChange={(text) => isCenter ? onCenterChange(text) : onCellChange(index, text)}
                 onDrillDown={() => onDrillDown(index)}
-                onPromote={() => onPromoteCell(index)}
-                onOpenLinkMenu={() => onOpenLinkMenu(index)}
-                onUnlink={() => onUnlinkCell(index)}
               />
             );
           })}
