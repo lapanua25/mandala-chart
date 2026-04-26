@@ -88,15 +88,15 @@ export const Cell: React.FC<CellProps> = ({
           }
         }}
         className={`
-          w-full h-full flex flex-col items-center justify-center px-2
-          resize-none bg-transparent outline-none
+          w-full h-full resize-none bg-transparent outline-none
           text-center font-medium tracking-wide
-          focus:ring-0 whitespace-pre-wrap break-words
+          focus:ring-0
           ${isCenter ? 'font-bold bg-clip-text text-transparent opacity-100 mix-blend-normal' : 'text-textDefault'}
         `}
         style={{
           fontSize: `${fontSize}px`,
           lineHeight: '1.4',
+          whiteSpace: 'normal',
           wordBreak: 'break-word',
           overflowWrap: 'break-word',
           textAlign: 'center',
@@ -106,10 +106,9 @@ export const Cell: React.FC<CellProps> = ({
           padding: '0',
           margin: '0',
           border: 'none',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center'
+          display: 'grid',
+          placeItems: 'center',
+          minHeight: '100%'
         }}
       >
         {data.text}
