@@ -138,12 +138,6 @@ export const Cell: React.FC<CellProps> = ({
           )}
         </button>
       )}
-
-
-      {/* Linked indicator dot on mobile / desktop */}
-      {!isCenter && isLinked && (
-        <div className="absolute top-3 left-3 w-2 h-2 rounded-full bg-primary shadow-sm pointer-events-none" title="リンク先あり" />
-      )}
     </div>
   );
 };
