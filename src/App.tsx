@@ -1,10 +1,9 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useMandalaStore } from './hooks/useMandalaStore';
 import { Sidebar } from './components/Sidebar';
 import { NetworkViewerModal } from './components/NetworkViewerModal';
 import { TutorialModal } from './components/TutorialModal';
-import { X, LayoutGrid, Download, Camera, HelpCircle } from 'lucide-react';
-import { toPng } from 'html-to-image';
+import { X, LayoutGrid, HelpCircle } from 'lucide-react';
 import { Breadcrumbs } from './components/Breadcrumbs';
 import { MandalaGrid } from './components/MandalaGrid';
 import { AdSense } from './components/AdSense';
@@ -29,41 +28,12 @@ function App() {
   const [isTutorialOpen, setIsTutorialOpen] = useState(false);
   const [isPolicyModalOpen, setIsPolicyModalOpen] = useState(false);
   const [policyType, setPolicyType] = useState<'privacy' | 'terms'>('privacy');
-  const [isDownloading, setIsDownloading] = useState(false);
-  const gridRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     const savedTheme = localStorage.getItem('mandala-theme');
     if (savedTheme) {
       document.documentElement.setAttribute('data-theme', savedTheme === 'light' ? '' : savedTheme);
     }
   }, []);
-  const handleDownloadGrid = async () => {
-    if (!gridRef.current) return;
-    try {
-      setIsDownloading(true);
-      // Wait a moment for any popovers/menus to close if needed
-      await new Promise(res => setTimeout(res, 100));
-      
-      const dataUrl = await toPng(gridRef.current, {
-        cacheBust: true,
-        backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--bg-app').trim() || '#f0f2f5',
-        style: {
-          padding: '20px',
-        }
-      });
-      
-      const link = document.createElement('a');
-      link.download = `mandala-chart-${Date.now()}.png`;
-      link.href = dataUrl;
-      link.click();
-    } catch (err) {
-      console.error('Failed to export grid image', err);
-      alert('画像の保存に失敗しました。');
-    } finally {
-      setIsDownloading(false);
-    }
-  };
   if (!appState || !currentGrid) {
     return <div className="flex h-screen items-center justify-center bg-secondary">Loading...</div>;
   }
@@ -86,7 +56,7 @@ function App() {
         <main className="flex-1 overflow-hidden flex flex-col items-center p-1 sm:p-2 md:p-4 pt-2 sm:pt-3 md:pt-4 w-full max-w-4xl mx-auto">
           {/* Header Area */}
           <div className="w-full text-center mb-1 sm:mb-2 md:mb-3 space-y-0 sm:space-y-1 relative">
-            <h2 className="text-base sm:text-lg md:text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-gray-800 to-gray-500 tracking-tight line-clamp-1">
+            <h2 className="text-base sm:text-lg md:text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-gray-800 to-gray-500 dark:from-gray-200 dark:to-gray-400 tracking-tight line-clamp-1">
               {breadcrumbs[breadcrumbs.length - 1]?.text || '名称未設定'}
             </h2>
             <p className="text-textSecondary text-xs font-medium pr-12 hidden sm:block">
@@ -102,14 +72,6 @@ function App() {
                 title="使い方ガイド"
               >
                 <HelpCircle className="w-5 h-5" />
-              </button>
-              <button
-                onClick={handleDownloadGrid}
-                disabled={isDownloading}
-                className="p-2.5 bg-white text-gray-700 hover:text-primary rounded-full transition-all hidden md:flex items-center justify-center group shadow-sm ring-1 ring-border shadow-md active:scale-95 disabled:opacity-50"
-                title="チャートを画像で保存"
-              >
-                <Download className="w-5 h-5" />
               </button>
               <button
                 onClick={() => setIsNetworkModalOpen(true)}
@@ -129,14 +91,6 @@ function App() {
                 ガイド
               </button>
               <button
-                onClick={handleDownloadGrid}
-                disabled={isDownloading}
-                className="flex items-center gap-2 px-4 py-2 bg-white text-gray-700 hover:text-primary rounded-full transition-colors shadow-md ring-1 ring-border text-sm font-semibold active:scale-95 disabled:opacity-50"
-              >
-                <Camera className="w-4 h-4" />
-                画像を保存
-              </button>
-              <button
                 onClick={() => setIsNetworkModalOpen(true)}
                 className="flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary hover:bg-primary hover:text-white rounded-full transition-colors shadow-sm ring-1 ring-primary/20 text-sm font-semibold"
               >
@@ -147,7 +101,7 @@ function App() {
           </div>
 
           <div className="w-full max-w-[700px] flex-1 flex flex-col justify-center pb-1 sm:pb-2 border-b border-border/10">
-            <div ref={gridRef} className="p-1 sm:p-2 rounded-3xl transition-colors">
+            <div className="p-1 sm:p-2 rounded-3xl transition-colors">
               <MandalaGrid
                 gridData={currentGrid}
                 onCellChange={(index, text) => updateCell(activePath[activePath.length - 1], index, text)}

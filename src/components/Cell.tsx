@@ -109,7 +109,9 @@ export const Cell: React.FC<CellProps> = ({
           display: 'table-cell',
           verticalAlign: 'middle',
           height: '100%',
-          width: '100%'
+          width: '100%',
+          overflow: 'hidden',
+          boxSizing: 'border-box'
         }}
       >
         {data.text}
