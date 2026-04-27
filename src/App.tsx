@@ -82,7 +82,7 @@ function App() {
               </button>
             </div>
 
-            <div className="mt-4 md:hidden flex justify-center gap-3">
+            <div className="mt-2 md:hidden flex justify-center gap-3">
               <button
                 onClick={() => setIsTutorialOpen(true)}
                 className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-full transition-colors shadow-sm ring-1 ring-blue-200 text-sm font-semibold"
@@ -100,7 +100,7 @@ function App() {
             </div>
           </div>
 
-          <div className="w-full max-w-[700px] flex-1 flex flex-col justify-center pb-1 sm:pb-2 border-b border-border/10">
+          <div className="w-full max-w-[700px] flex flex-col pb-1 sm:pb-2 border-b border-border/10">
             <div className="p-1 sm:p-2 rounded-3xl transition-colors">
               <MandalaGrid
                 gridData={currentGrid}
@@ -112,10 +112,10 @@ function App() {
             </div>
 
             {/* AdSense Placement at the bottom of the grid */}
-            <AdSense 
-              client="ca-pub-XXXXXXXXXXXXXXXX" 
-              slot="XXXXXXXXXX" 
-              className="mt-12"
+            <AdSense
+              client="ca-pub-XXXXXXXXXXXXXXXX"
+              slot="XXXXXXXXXX"
+              className="mt-2 sm:mt-4"
             />
           </div>
 
