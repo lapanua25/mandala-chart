@@ -90,7 +90,7 @@ export const Cell: React.FC<CellProps> = ({
         className={`
           w-full h-full resize-none bg-transparent outline-none
           text-center font-medium tracking-wide
-          focus:ring-0
+          focus:ring-0 flex flex-col items-center justify-center
           ${isCenter ? 'font-bold bg-clip-text text-transparent opacity-100 mix-blend-normal' : 'text-textDefault'}
         `}
         style={{
@@ -106,8 +106,10 @@ export const Cell: React.FC<CellProps> = ({
           padding: '0',
           margin: '0',
           border: 'none',
-          display: 'table-cell',
-          verticalAlign: 'middle',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
           height: '100%',
           width: '100%',
           overflow: 'hidden',

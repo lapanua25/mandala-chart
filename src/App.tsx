@@ -41,7 +41,7 @@ function App() {
   const activeRootId = activePath.length > 0 ? activePath[0] : null;
 
   return (
-    <div className="flex h-screen overflow-hidden bg-secondary selection:bg-blue-100">
+    <div className="flex fixed inset-0 overflow-hidden bg-secondary selection:bg-blue-100">
       <Sidebar 
         appState={appState}
         activeRootId={activeRootId}
@@ -53,9 +53,9 @@ function App() {
       <div className="flex-1 flex flex-col h-full overflow-hidden relative">
         <Breadcrumbs breadcrumbs={breadcrumbs} onNavigate={gotoBreadcrumb} />
         
-        <main className="flex-1 overflow-hidden flex flex-col items-center p-1 sm:p-2 md:p-4 pt-2 sm:pt-3 md:pt-4 w-full max-w-4xl mx-auto">
+        <main className="flex-1 min-h-0 overflow-hidden flex flex-col items-center p-1 sm:p-2 md:p-4 pt-2 sm:pt-3 md:pt-4 w-full max-w-4xl mx-auto">
           {/* Header Area */}
-          <div className="w-full text-center mb-1 sm:mb-2 md:mb-3 space-y-0 sm:space-y-1 relative">
+          <div className="w-full text-center mb-1 sm:mb-2 md:mb-3 space-y-0 sm:space-y-1 relative z-20">
             <h2 className="text-base sm:text-lg md:text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-gray-800 to-gray-500 dark:from-gray-200 dark:to-gray-400 tracking-tight line-clamp-1">
               {breadcrumbs[breadcrumbs.length - 1]?.text || '名称未設定'}
             </h2>
@@ -100,8 +100,8 @@ function App() {
             </div>
           </div>
 
-          <div className="w-full max-w-[700px] flex flex-col pb-1 sm:pb-2 border-b border-border/10">
-            <div className="p-1 sm:p-2 rounded-3xl transition-colors">
+          <div className="w-full max-w-[700px] flex-1 min-h-0 flex flex-col pb-1 sm:pb-2 border-b border-border/10">
+            <div className="flex-1 min-h-0 p-1 sm:p-2 rounded-3xl transition-colors overflow-hidden">
               <MandalaGrid
                 gridData={currentGrid}
                 onCellChange={(index, text) => updateCell(activePath[activePath.length - 1], index, text)}
@@ -126,7 +126,7 @@ function App() {
                <button onClick={() => { setPolicyType('terms'); setIsPolicyModalOpen(true); }} className="hover:text-primary transition-colors cursor-pointer">Terms</button>
              </div>
              <p className="text-[10px] sm:text-xs text-textMuted tracking-widest uppercase">
-               © 2024 Mandala Chart
+               © 2026 Mandala Chart
              </p>
           </footer>
         </main>
