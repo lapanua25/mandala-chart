@@ -30,10 +30,10 @@ export const AdSense: React.FC<AdSenseProps> = ({
   }, []);
 
   return (
-    <div className={`adsense-container my-8 w-full flex justify-center ${className}`}>
+    <div className={`adsense-container flex-shrink-0 w-full flex justify-center overflow-hidden max-h-[100px] ${className}`}>
       <ins
         className="adsbygoogle"
-        style={{ display: 'block', minWidth: '300px', minHeight: '90px' }}
+        style={{ display: 'block', minWidth: '300px', maxHeight: '90px' }}
         data-ad-client={client}
         data-ad-slot={slot}
         data-ad-format={format}

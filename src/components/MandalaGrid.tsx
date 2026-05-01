@@ -19,7 +19,7 @@ export const MandalaGrid: React.FC<MandalaGridProps> = ({
   pathLength
 }) => {
   return (
-    <div className="w-full max-w-2xl mx-auto aspect-square p-1 sm:p-2 md:p-4">
+    <div className="mx-auto p-1 sm:p-2 md:p-4" style={{ width: 'min(100%, calc(100dvh - 180px))', aspectRatio: '1 / 1' }}>
       <AnimatePresence mode="wait">
         <motion.div
           key={pathLength}
