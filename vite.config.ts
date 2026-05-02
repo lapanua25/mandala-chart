@@ -3,8 +3,8 @@ import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
-  // GitHub Pagesで terra-nova-botanica サイト内の /mandala/ にホストされます
-  base: '/mandala/',
+  // Custom domain terra-nova-botanical.com にホストされます
+  base: '/',
   plugins: [
     react(),
     VitePWA({
